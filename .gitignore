@@ -1,0 +1,17 @@
+# Claude Code / local agent instructions
+CLAUDE.md
+**/CLAUDE.md
+.claude/
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Env & deploy
+.env
+.env.*
+.vercel
+
+# Markdown docs kept local only (except the repo README)
+*.md
+!/README.md
