@@ -74,7 +74,6 @@ function FullMicrosite({ event, site }: { event: AmaiEvent; site: Microsite }) {
     { id: "speakers", label: "Speakers" },
     { id: "participate", label: "Participate" },
     { id: "organisations", label: "Organisations" },
-    { id: "register", label: "Registration" },
     { id: "gallery", label: "Gallery" },
     { id: "venue", label: "Venue" },
     { id: "contact", label: "Contact" },

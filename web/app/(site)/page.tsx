@@ -114,8 +114,8 @@ export default function HomePage() {
         </div>
       </Container>
 
-      {/* Events */}
-      <Section>
+      {/* Events: target of the header's "Register for events" button */}
+      <Section id="upcoming-events">
         <Container>
           <SectionHeading
             eyebrow="Events"

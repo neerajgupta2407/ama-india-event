@@ -135,7 +135,7 @@ export function CountdownBar({ event, registerHref = "#register" }: { event: Ama
 export function About({ site }: Props) {
   const a = site.about;
   return (
-    <Section id="about" className="scroll-mt-12">
+    <Section id="about">
       <Container>
         <Reveal className="grid gap-10 lg:grid-cols-[5fr_7fr] lg:gap-14">
           <div className="relative min-h-[340px] overflow-hidden rounded-[22px] border-[6px] border-white bg-brand-blue-50 shadow-[0_20px_44px_rgb(31_111_235/.16)]">
@@ -229,7 +229,7 @@ export function Themes({ site }: Props) {
 
 export function Agenda({ event, site }: Props) {
   return (
-    <Section id="agenda" tone="soft" className="scroll-mt-12">
+    <Section id="agenda" tone="soft">
       <Container>
         <Reveal>
           <SectionHeading
@@ -285,7 +285,7 @@ export function Speakers({ event, site }: Props) {
     ? Array.from({ length: 4 }, () => ({ name: "To be announced", role: "Designation", org: "Organisation", photo: undefined }))
     : event.speakers;
   return (
-    <Section id="speakers" className="scroll-mt-12">
+    <Section id="speakers">
       <Container>
         <Reveal>
           <SectionHeading
@@ -326,7 +326,7 @@ export function Speakers({ event, site }: Props) {
 
 export function Participate({ site }: Props) {
   return (
-    <Section id="participate" tone="soft" className="scroll-mt-12">
+    <Section id="participate" tone="soft">
       <Container>
         <Reveal>
           <SectionHeading eyebrow="Participate" icon={MessagesSquare} title="Exhibit or partner with AMAI" />
@@ -364,7 +364,7 @@ export function Participate({ site }: Props) {
 export function Organisations({ site }: Props) {
   const o = site.organisations;
   return (
-    <Section id="organisations" className="scroll-mt-12">
+    <Section id="organisations">
       <Container>
         <Reveal>
           <SectionHeading
@@ -399,7 +399,7 @@ const FEE_ICONS: Record<string, LucideIcon> = { MEMBER: IdCard, NON_MEMBER: User
 export function Registration({ event, site }: Props) {
   const open = event.status === "open";
   return (
-    <Section id="register" tone="fade" className="scroll-mt-12">
+    <Section id="register" tone="fade">
       <Container>
         <Reveal>
           <SectionHeading
@@ -504,7 +504,7 @@ function FeeCard({
 
 export function Gallery({ site }: Props) {
   return (
-    <Section id="gallery" className="scroll-mt-12">
+    <Section id="gallery">
       <Container>
         <Reveal>
           <SectionHeading
@@ -542,7 +542,7 @@ export function Gallery({ site }: Props) {
 export function Venue({ site }: Props) {
   const v = site.venueInfo;
   return (
-    <Section id="venue" tone="soft" className="scroll-mt-12">
+    <Section id="venue" tone="soft">
       <Container>
         <Reveal>
           <SectionHeading eyebrow="Venue & accommodation" icon={MapPin} title={v.title} sub={v.sub} />
@@ -601,7 +601,7 @@ export function ContactFaq({ site }: Props) {
     },
   ];
   return (
-    <Section id="contact" className="scroll-mt-12">
+    <Section id="contact">
       <Container>
         <Reveal className="grid gap-12 lg:grid-cols-[5fr_7fr]">
           <div>

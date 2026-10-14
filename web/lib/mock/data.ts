@@ -279,5 +279,6 @@ export const CAMPAIGN_LINKS: Record<string, { event: string; source: string; cam
 };
 
 export const getEvent = (slug: string) => EVENTS.find((e) => e.slug === slug);
+export const hasMicrosite = (slug: string) => !!getEvent(slug)?.microsite;
 export const upcomingEvents = () => EVENTS.filter((e) => e.status === "open");
 export const pastEvents = () => EVENTS.filter((e) => e.status === "archived" || e.status === "closed");

@@ -1,12 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, Mail, Menu, Phone, TriangleAlert, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Mail, Menu, Phone, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { SECRETARIAT } from "@/lib/mock/data";
+import { SECRETARIAT, hasMicrosite } from "@/lib/mock/data";
 
 import { ButtonLink, Container } from "../ui/primitives";
 import { Logo } from "./logo";
@@ -19,6 +19,46 @@ export function CernPill({ compact }: { compact?: boolean }) {
       {compact ? "Chlorine emergency" : "Chlorine Emergency (CERN)"}
       <span className="tnum">{SECRETARIAT.cern.label}</span>
     </a>
+  );
+}
+
+// ai_topbar: contact line shared by the site header and the conference microsite header.
+export function TopBar({ backToAmai }: { backToAmai?: boolean }) {
+  return (
+    <div className="border-b border-line-200 bg-brand-blue-50 text-[12.5px] text-ink-900">
+      <Container className="flex h-9 items-center justify-between gap-4">
+        <span className="hidden items-center gap-4 lg:flex">
+          <a href={`tel:${SECRETARIAT.phones[0].tel}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
+            <Phone className="size-3.5 text-brand-blue-600" aria-hidden />
+            <span className="tnum">{SECRETARIAT.phones[0].label}</span>
+          </a>
+          <a href={`mailto:${SECRETARIAT.email}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
+            <Mail className="size-3.5 text-brand-blue-600" aria-hidden />
+            {SECRETARIAT.email}
+          </a>
+        </span>
+        <span className="sm:hidden">
+          <CernPill compact />
+        </span>
+        <span className="hidden sm:inline">
+          <CernPill />
+        </span>
+        {backToAmai ? (
+          <Link href="/" className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-brand-blue-600 hover:underline">
+            Back to AMAI <ArrowRight className="size-3.5" aria-hidden />
+          </Link>
+        ) : (
+          <nav aria-label="Utility" className="hidden items-center gap-5 font-semibold text-brand-blue-600 md:flex">
+            <Link href="/contact?topic=membership" className="hover:underline">
+              Become a member
+            </Link>
+            <Link href="/dashboard" className="hover:underline">
+              Staff login
+            </Link>
+          </nav>
+        )}
+      </Container>
+    </div>
   );
 }
 
@@ -39,37 +79,13 @@ export function Header() {
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
+  // A conference microsite brings its own header (ai_site's in-page menu), so the site menu steps aside.
+  const micrositeSlug = /^\/events\/([^/]+)\/?$/.exec(pathname)?.[1];
+  if (micrositeSlug && hasMicrosite(micrositeSlug)) return null;
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90">
-      {/* ai_topbar */}
-      <div className="border-b border-line-200 bg-brand-blue-50 text-[12.5px] text-ink-900">
-        <Container className="flex h-9 items-center justify-between gap-4">
-          <span className="hidden items-center gap-4 lg:flex">
-            <a href={`tel:${SECRETARIAT.phones[0].tel}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
-              <Phone className="size-3.5 text-brand-blue-600" aria-hidden />
-              <span className="tnum">{SECRETARIAT.phones[0].label}</span>
-            </a>
-            <a href={`mailto:${SECRETARIAT.email}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
-              <Mail className="size-3.5 text-brand-blue-600" aria-hidden />
-              {SECRETARIAT.email}
-            </a>
-          </span>
-          <span className="sm:hidden">
-            <CernPill compact />
-          </span>
-          <span className="hidden sm:inline">
-            <CernPill />
-          </span>
-          <nav aria-label="Utility" className="hidden items-center gap-5 font-semibold text-brand-blue-600 md:flex">
-            <Link href="/contact?topic=membership" className="hover:underline">
-              Become a member
-            </Link>
-            <Link href="/dashboard" className="hover:underline">
-              Staff login
-            </Link>
-          </nav>
-        </Container>
-      </div>
+      <TopBar />
 
       <div className="border-b border-line-200">
         <Container className="flex h-[72px] items-center justify-between gap-4">
@@ -111,7 +127,7 @@ export function Header() {
             </ul>
           </nav>
           <div className="flex items-center gap-2">
-            <ButtonLink href="/events" className="max-sm:hidden">
+            <ButtonLink href="/#upcoming-events" className="max-sm:hidden">
               Register for events
             </ButtonLink>
             <button
@@ -165,8 +181,9 @@ export function Header() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 grid gap-3">
-              <ButtonLink href="/events" size="lg">
+            {/* A same-page hash link keeps the pathname, so close the menu on click as well. */}
+            <div className="mt-6 grid gap-3" onClick={() => setOpen(false)}>
+              <ButtonLink href="/#upcoming-events" size="lg">
                 Register for events
               </ButtonLink>
               <ButtonLink href="/contact" variant="secondary" size="lg">
