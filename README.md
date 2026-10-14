@@ -36,14 +36,14 @@ pnpm build && pnpm lint
 | `/gateway/[ref]` | **Mock** hosted checkout: pick success, decline, amount mismatch or cancel |
 | `/pay/[ref]` | Status page: *Processing* until the simulated webhook lands, then Paid / Failed / Mismatch |
 | `/c/[token]` | Attendee QR pass |
-| `/q/[code]` | Campaign QR redirect with UTM tags, e.g. `/q/ac26-poster` |
+| `/q/[code]` | Campaign QR redirect with UTM tags, e.g. `/q/ac27-poster` |
 | `/contact` | Enquiry form |
 | `/dashboard/*` | Staff: overview, registrations + record drawer + CSV export, check-in, reconciliation |
 | anything else | Placeholder for content pages that will come from the CMS |
 
 ## Demo script
 
-1. Open `/events/annual-conference-2026/register?utm_source=poster`, choose **Member delegate**, verify with `AMAI-M-0011`. Also try `you@dcmshriram.com` (matched by work email), `AMAI-M-0015` (lapsed) or anything else (manual review).
+1. Open `/events/alkali-industry-conference-2027/register?utm_source=poster`, choose **Member delegate**, verify with `AMAI-M-0011`. Also try `you@dcmshriram.com` (matched by work email), `AMAI-M-0015` (lapsed) or anything else (manual review).
 2. Fill in the details, review, **Pay**, then choose **Payment succeeds** and watch Processing become Confirmed.
 3. `/dashboard/registrations` — the new row is on top; open it for payment attempts, messages and the audit trail.
 4. `/dashboard/check-in` — type the registration ID. A second scan shows **Already checked in**.

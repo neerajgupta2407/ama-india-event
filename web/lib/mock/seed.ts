@@ -26,7 +26,7 @@ export function buildSeed(): Registration[] {
   const counters: Record<string, number> = {};
 
   for (let i = 0; i < 64; i++) {
-    const event = openEvents[i % 5 === 0 ? 1 : i % 7 === 0 ? 2 : 0];
+    const event = openEvents[i % openEvents.length];
     const category = pick(r, event.categories);
     const audience: Audience = category.audience;
     const first = pick(r, FIRST);
@@ -101,7 +101,7 @@ export function buildSeed(): Registration[] {
       audit: [
         { at: created.toISOString(), actor: "visitor", action: "registration.started" },
         ...(paid ? [{ at: paidAt, actor: "webhook:razorpay", action: "order.paid" }] : []),
-        ...(orderStatus === "MISMATCH" ? [{ at: paidAt, actor: "webhook:razorpay", action: "order.mismatch (amount 1180000 ≠ 1416000)" }] : []),
+        ...(orderStatus === "MISMATCH" ? [{ at: paidAt, actor: "webhook:razorpay", action: `order.mismatch (amount ${q.totalPaise - 600000} ≠ ${q.totalPaise})` }] : []),
         ...(orderStatus === "REFUNDED" ? [{ at: "2026-09-10T06:12:00Z", actor: "finance@ama-india.org", action: "order.refunded" }] : []),
       ],
     });

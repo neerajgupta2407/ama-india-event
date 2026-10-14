@@ -10,7 +10,7 @@ import type { Audience, MemberValidation, OrderStatus, PaymentAttempt, Registrat
 import { getEvent, MEMBER_ORGS } from "./data";
 import { buildSeed } from "./seed";
 
-const KEY = "amai-demo-v1";
+const KEY = "amai-demo-v2"; // v2: the 2026 dummy events were removed
 const CHANGE = "amai-demo-change";
 const WEBHOOK_DELAY_MS = 3500;
 const LATENCY_MS = 450;
