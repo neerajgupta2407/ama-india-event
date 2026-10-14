@@ -4,9 +4,11 @@ import { forwardRef, useId, type ComponentProps, type ReactNode } from "react";
 
 export const inputClass = (invalid?: boolean, className?: string) =>
   clsx(
-    "block w-full rounded-[var(--radius-control)] border bg-white px-3 text-base text-ink-900 placeholder:text-ink-400",
-    "h-12 sm:h-11 transition-shadow duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1",
-    invalid ? "border-danger focus:ring-danger" : "border-ink-400 focus:border-brand-blue-600 focus:ring-brand-blue-600",
+    "block w-full rounded-[var(--radius-control)] border-[1.5px] bg-white px-3.5 text-base text-ink-900 placeholder:text-ink-400",
+    "h-12 sm:h-11 transition-shadow duration-150 focus:outline-none focus:ring-4",
+    invalid
+      ? "border-danger focus:ring-danger/15"
+      : "border-line-200 hover:border-brand-blue-500 focus:border-brand-blue-600 focus:ring-brand-blue-600/12",
     className,
   );
 

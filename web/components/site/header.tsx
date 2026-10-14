@@ -1,10 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
+import { ChevronDown, Mail, Menu, Phone, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { SECRETARIAT } from "@/lib/mock/data";
 
 import { ButtonLink, Container } from "../ui/primitives";
 import { Logo } from "./logo";
@@ -12,13 +14,10 @@ import { NAV } from "./nav";
 
 export function CernPill({ compact }: { compact?: boolean }) {
   return (
-    <a
-      href="tel:1800111735"
-      className="inline-flex items-center gap-2 rounded-full bg-emergency px-3 py-1 text-[13px] font-semibold text-white hover:bg-[#a80000]"
-    >
-      <Phone className="size-3.5" aria-hidden />
+    <a href={`tel:${SECRETARIAT.cern.tel}`} className="inline-flex items-center gap-1.5 font-semibold text-emergency hover:underline">
+      <TriangleAlert className="size-3.5" aria-hidden />
       {compact ? "Chlorine emergency" : "Chlorine Emergency (CERN)"}
-      <span className="tnum">1800-11-1735</span>
+      <span className="tnum">{SECRETARIAT.cern.label}</span>
     </a>
   );
 }
@@ -41,24 +40,32 @@ export function Header() {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
-      <div className="bg-ink-900 text-white">
-        <Container className="flex h-10 items-center justify-between gap-4 text-[13px]">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/90">
+      {/* ai_topbar */}
+      <div className="border-b border-line-200 bg-brand-blue-50 text-[12.5px] text-ink-900">
+        <Container className="flex h-9 items-center justify-between gap-4">
+          <span className="hidden items-center gap-4 lg:flex">
+            <a href={`tel:${SECRETARIAT.phones[0].tel}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
+              <Phone className="size-3.5 text-brand-blue-600" aria-hidden />
+              <span className="tnum">{SECRETARIAT.phones[0].label}</span>
+            </a>
+            <a href={`mailto:${SECRETARIAT.email}`} className="inline-flex items-center gap-1.5 hover:text-brand-blue-600">
+              <Mail className="size-3.5 text-brand-blue-600" aria-hidden />
+              {SECRETARIAT.email}
+            </a>
+          </span>
           <span className="sm:hidden">
             <CernPill compact />
           </span>
           <span className="hidden sm:inline">
             <CernPill />
           </span>
-          <nav aria-label="Utility" className="hidden items-center gap-5 md:flex">
-            <Link href="/contact?topic=membership" className="text-white/80 hover:text-white">
+          <nav aria-label="Utility" className="hidden items-center gap-5 font-semibold text-brand-blue-600 md:flex">
+            <Link href="/contact?topic=membership" className="hover:underline">
               Become a member
             </Link>
-            <Link href="/dashboard" className="text-white/80 hover:text-white">
+            <Link href="/dashboard" className="hover:underline">
               Staff login
-            </Link>
-            <Link href="/contact" className="inline-flex items-center gap-1.5 text-white/80 hover:text-white">
-              <Mail className="size-3.5" aria-hidden /> Contact
             </Link>
           </nav>
         </Container>
@@ -74,10 +81,10 @@ export function Header() {
                   <Link
                     href={item.href}
                     className={clsx(
-                      "flex h-[72px] items-center gap-1 border-b-2 px-2 text-[14px] font-medium whitespace-nowrap transition-colors",
+                      "my-4 flex h-10 items-center gap-1 rounded-lg px-3 text-[13.5px] font-semibold whitespace-nowrap transition-colors",
                       isActive(item.href)
-                        ? "border-brand-blue-600 text-brand-blue-600"
-                        : "border-transparent text-ink-700 hover:text-brand-blue-600",
+                        ? "bg-brand-blue-50 text-brand-blue-600"
+                        : "text-ink-900 hover:bg-brand-blue-50 hover:text-brand-blue-600",
                     )}
                   >
                     {item.label}
@@ -85,12 +92,12 @@ export function Header() {
                   </Link>
                   {item.children && (
                     <div className="invisible absolute top-full left-0 min-w-56 translate-y-1 opacity-0 transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
-                      <ul className="mt-px rounded-b-[var(--radius-card)] border border-line-200 bg-white p-2 shadow-lg">
+                      <ul className="rounded-[14px] border border-line-200 bg-white p-2 shadow-[var(--shadow-soft)]">
                         {item.children.map((c) => (
                           <li key={c.label}>
                             <Link
                               href={c.href}
-                              className="block rounded-md px-3 py-2 text-sm text-ink-700 hover:bg-brand-blue-50 hover:text-brand-blue-600"
+                              className="block rounded-lg px-3 py-2 text-sm font-medium text-ink-900 hover:bg-brand-blue-50 hover:text-brand-blue-600"
                             >
                               {c.label}
                             </Link>
@@ -104,12 +111,12 @@ export function Header() {
             </ul>
           </nav>
           <div className="flex items-center gap-2">
-            <ButtonLink href="/events" className="hidden sm:inline-flex">
+            <ButtonLink href="/events" className="max-sm:hidden">
               Register for events
             </ButtonLink>
             <button
               type="button"
-              className="inline-flex size-11 items-center justify-center rounded-md text-ink-900 hover:bg-surface-100 xl:hidden"
+              className="inline-flex size-11 items-center justify-center rounded-lg border border-line-200 bg-white text-ink-900 hover:bg-brand-blue-50 xl:hidden"
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -122,7 +129,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div id="mobile-nav" className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-113px)] overflow-y-auto border-t border-line-200 bg-white xl:hidden">
+        <div id="mobile-nav" className="absolute inset-x-0 top-full z-40 h-[calc(100dvh-110px)] overflow-y-auto border-t border-line-200 bg-white xl:hidden">
           <Container className="py-4">
             <ul className="divide-y divide-line-200">
               {NAV.map((item) => (
@@ -131,7 +138,7 @@ export function Header() {
                     <>
                       <button
                         type="button"
-                        className="flex min-h-12 w-full items-center justify-between py-3 text-left text-base font-medium text-ink-900"
+                        className="flex min-h-12 w-full items-center justify-between py-3 text-left text-base font-semibold text-ink-900"
                         aria-expanded={expanded === item.label}
                         onClick={() => setExpanded((e) => (e === item.label ? null : item.label))}
                       >
@@ -151,7 +158,7 @@ export function Header() {
                       )}
                     </>
                   ) : (
-                    <Link href={item.href} className="flex min-h-12 items-center py-3 text-base font-medium text-ink-900">
+                    <Link href={item.href} className="flex min-h-12 items-center py-3 text-base font-semibold text-ink-900">
                       {item.label}
                     </Link>
                   )}

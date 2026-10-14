@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
-/* Tokens from ../DESIGN_SYSTEM.md §8 */
+/* Palette from ../ai_site/css/style.css (:root). Token names are kept from DESIGN_SYSTEM.md §8 so components restyle in place. */
 @theme {
-  --color-brand-blue-50: #eef4fb;
-  --color-brand-blue-100: #dce8f5;
-  --color-brand-blue-500: #1a65ac;
-  --color-brand-blue-600: #0053a3;
-  --color-brand-blue-700: #00427f;
-  --color-brand-indigo-50: #efeff8;
-  --color-brand-indigo-600: #3d4196;
+  --color-brand-blue-50: #eaf3ff;
+  --color-brand-blue-100: #d6e5fb;
+  --color-brand-blue-500: #3b8bff;
+  --color-brand-blue-600: #1f6feb;
+  --color-brand-blue-700: #1858c4;
+  --color-brand-indigo-50: #eaf3ff;
+  --color-brand-indigo-600: #1e3a66;
   --color-accent-amber-50: #fef6e6;
   --color-accent-amber-400: #f5b23a;
 
-  --color-ink-900: #1a1f2b;
-  --color-ink-700: #343b48;
-  --color-ink-500: #5b6472;
-  --color-ink-400: #8c96a3;
-  --color-line-200: #dde3ea;
-  --color-surface-100: #f4f6f9;
+  --color-ink-900: #1e3a66;
+  --color-ink-700: #2b4570;
+  --color-ink-500: #5b7197;
+  --color-ink-400: #8aa0c2;
+  --color-line-200: #d6e5fb;
+  --color-surface-100: #f5f9ff;
   --color-surface-0: #ffffff;
 
   --color-success: #15803d;
@@ -28,12 +28,16 @@
   --color-danger-bg: #fef2f2;
   --color-emergency: #cc0000;
 
-  --font-serif: var(--font-source-serif), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  /* One family for headings and body, as in ai_site. */
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  --radius-control: 6px;
-  --radius-card: 12px;
+  --radius-control: 10px;
+  --radius-card: 18px;
+
+  --shadow-soft: 0 18px 40px rgb(31 111 235 / 0.14);
+  --shadow-lift: 0 24px 50px rgb(31 111 235 / 0.22);
+  --shadow-btn: 0 8px 20px rgb(31 111 235 / 0.22);
   --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   --animate-rise: rise 400ms var(--ease-standard) both;
@@ -52,6 +56,8 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 124px; /* sticky header: topbar + nav */
   }
 
   body {
@@ -68,6 +74,8 @@
   h3,
   h4 {
     color: var(--color-ink-900);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
     text-wrap: balance;
   }
 
@@ -87,5 +95,20 @@
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
+
+    html {
+      scroll-behavior: auto;
+    }
   }
+}
+
+/* ai_bg_soft / ai_bg_soft2 / ai_hero section backgrounds */
+@utility bg-soft {
+  background: var(--color-surface-100);
+}
+@utility bg-soft-fade {
+  background: linear-gradient(180deg, var(--color-brand-blue-50) 0%, #fff 100%);
+}
+@utility bg-hero {
+  background: linear-gradient(135deg, #f3f8ff 0%, #dcebff 55%, #eaf3ff 100%);
 }

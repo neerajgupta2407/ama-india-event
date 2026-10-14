@@ -18,7 +18,30 @@ export type TicketCategory = {
 };
 
 export type AgendaItem = { time: string; title: string; speaker?: string };
-export type Speaker = { name: string; role: string; org: string };
+export type Speaker = { name: string; role: string; org: string; photo?: string };
+
+// Optional content for the full conference microsite (ported from ai_site/index.html).
+// Events without it fall back to the compact agenda / speakers / fees layout.
+export type AgendaDay = { date: string; label: string; summary: string; tags: string[] };
+export type Microsite = {
+  edition?: string;
+  // Two-line hero heading; the second line is set in brand blue.
+  heroTitle: [string, string];
+  heroImage: string;
+  about: { title: string; body: string; image: string; focusTitle: string; focus: string[]; note?: string };
+  whyAttend: { title: string; sub: string; items: { title: string; text: string }[] };
+  themes: { title: string; note?: string; items: { title: string; text: string; image: string }[] };
+  days: AgendaDay[];
+  speakersNote?: string;
+  participate: { title: string; text: string; image: string; cta: string; href: string }[];
+  organisations: { title: string; sub: string; logos: { name: string; image: string }[] };
+  // Fees the online flow cannot take yet (e.g. USD for foreign participants): shown, routed to the secretariat.
+  offlineFees: { name: string; amount: string; note: string; points: string[]; href: string }[];
+  feePoints: string[];
+  gallery: { title: string; images: string[] };
+  venueInfo: { title: string; sub: string; name: string; address: string; website: string; mapEmbed: string };
+  faqs: { q: string; a: string }[];
+};
 
 export type EventStatus = "draft" | "open" | "closed" | "archived";
 
@@ -39,6 +62,7 @@ export type AmaiEvent = {
   agenda: AgendaItem[];
   speakers: Speaker[];
   highlights: string[];
+  microsite?: Microsite;
 };
 
 export type MemberValidation = "NOT_REQUIRED" | "VERIFIED" | "PENDING_REVIEW" | "REJECTED";

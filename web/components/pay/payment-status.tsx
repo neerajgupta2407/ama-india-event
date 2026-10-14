@@ -100,7 +100,7 @@ export function PaymentStatus({ orderRef }: { orderRef: string }) {
         <span className={clsx("mx-auto flex size-16 items-center justify-center rounded-full", iconTone[status])}>
           <Icon className={clsx("size-8", status === "PROCESSING" && "animate-spin")} aria-hidden />
         </span>
-        <h1 className="mt-5 font-serif text-3xl font-bold sm:text-4xl">{notStarted ? "Complete your payment" : meta.visitor}</h1>
+        <h1 className="mt-5 text-3xl font-extrabold sm:text-4xl">{notStarted ? "Complete your payment" : meta.visitor}</h1>
         <p className="mx-auto mt-3 max-w-xl text-ink-500">{body[status]}</p>
       </div>
 

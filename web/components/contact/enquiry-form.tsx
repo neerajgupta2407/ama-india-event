@@ -38,7 +38,7 @@ export function EnquiryForm() {
     return (
       <Card className="p-8 text-center">
         <CheckCircle2 className="mx-auto size-12 text-success" aria-hidden />
-        <h2 className="mt-4 font-serif text-2xl font-semibold">Thank you, we’ve received your message</h2>
+        <h2 className="mt-4 text-2xl font-extrabold">Thank you, we’ve received your message</h2>
         <p className="mt-2 text-ink-500">
           Reference <span className="font-mono text-ink-900">{ref}</span>. The secretariat has been notified and will reply
           by email.
@@ -75,7 +75,7 @@ export function EnquiryForm() {
             id="message"
             rows={5}
             aria-invalid={!!e.message}
-            className="block w-full rounded-[var(--radius-control)] border border-ink-400 px-3 py-2.5 text-base text-ink-900 focus:border-brand-blue-600 focus:ring-2 focus:ring-brand-blue-600 focus:outline-none"
+            className="block w-full rounded-[var(--radius-control)] border-[1.5px] border-line-200 px-3.5 py-2.5 text-base text-ink-900 hover:border-brand-blue-500 focus:border-brand-blue-600 focus:ring-4 focus:ring-brand-blue-600/12 focus:outline-none"
             {...register("message")}
           />
           {e.message && <FieldError>{e.message.message}</FieldError>}

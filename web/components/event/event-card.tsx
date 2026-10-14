@@ -25,18 +25,18 @@ export function EventCard({ event }: { event: AmaiEvent }) {
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="group flex overflow-hidden rounded-[var(--radius-card)] border border-line-200 bg-white shadow-[0_1px_2px_rgb(16_24_40/.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-blue-100 hover:shadow-md"
+      className="group flex h-full min-w-0 gap-4 rounded-[var(--radius-card)] border border-line-200 bg-[linear-gradient(135deg,#fff_40%,var(--color-brand-blue-50))] p-4 transition-all duration-300 hover:-translate-y-1.5 hover:border-brand-blue-500 hover:shadow-[var(--shadow-soft)] sm:p-5"
     >
-      <div className="flex w-20 shrink-0 flex-col items-center justify-center bg-brand-indigo-600 text-white sm:w-24">
-        <span className="font-serif text-3xl leading-none font-bold">{dayOf(event.startsAt)}</span>
-        <span className="mt-1 text-xs font-semibold tracking-widest">{monthOf(event.startsAt)}</span>
+      <div className="flex size-[68px] shrink-0 flex-col items-center justify-center rounded-[18px] bg-brand-blue-600 leading-none text-white sm:size-[74px]">
+        <span className="text-[1.7rem] font-extrabold">{dayOf(event.startsAt)}</span>
+        <span className="mt-1 text-[10px] font-bold tracking-[0.14em]">{monthOf(event.startsAt)}</span>
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-2 p-4 sm:p-5">
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <Chip tone={status.tone}>{status.label}</Chip>
           <span className="text-xs text-ink-500">{formatDateRange(event.startsAt, event.endsAt)}</span>
         </div>
-        <h3 className="font-sans text-lg leading-snug font-semibold text-ink-900 group-hover:text-brand-blue-600">
+        <h3 className="text-lg leading-snug font-extrabold text-ink-900 group-hover:text-brand-blue-600">
           {event.title}
         </h3>
         <p className="flex items-center gap-1.5 text-sm text-ink-500">
@@ -50,19 +50,19 @@ export function EventCard({ event }: { event: AmaiEvent }) {
             {member && (
               <div className="flex gap-1.5">
                 <dt className="text-ink-500">Member</dt>
-                <dd className="tnum font-semibold text-ink-900">{formatINRShort(quote(member).taxablePaise)}</dd>
+                <dd className="tnum font-bold text-brand-blue-600">{formatINRShort(quote(member).taxablePaise)}</dd>
               </div>
             )}
             {nonMember && (
               <div className="flex gap-1.5">
                 <dt className="text-ink-500">Non-member</dt>
-                <dd className="tnum font-semibold text-ink-900">{formatINRShort(quote(nonMember).taxablePaise)}</dd>
+                <dd className="tnum font-bold text-brand-blue-600">{formatINRShort(quote(nonMember).taxablePaise)}</dd>
               </div>
             )}
             <span className="text-xs self-center text-ink-500">+ GST</span>
           </dl>
         )}
-        <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-medium text-brand-blue-600">
+        <span className="mt-auto inline-flex items-center gap-1 pt-1 text-sm font-bold text-brand-blue-600">
           View & register <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </span>
       </div>

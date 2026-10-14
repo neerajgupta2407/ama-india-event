@@ -24,7 +24,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <aside className="shrink-0 bg-ink-900 text-white lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-60 lg:flex-col">
         <div className="flex items-center justify-between gap-3 px-4 py-4 lg:px-5 lg:py-6">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <span className="flex h-8 items-center rounded-full bg-white px-2.5 font-serif text-sm font-bold text-brand-indigo-600">
+            <span className="flex h-8 items-center rounded-full bg-white px-2.5 text-sm font-extrabold text-brand-indigo-600">
               AMAI
             </span>
             <span className="text-sm font-semibold">Events desk</span>
@@ -77,7 +77,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="font-serif text-[28px] leading-tight font-bold">{title}</h1>
+        <h1 className="text-[28px] leading-tight font-extrabold">{title}</h1>
         {description && <p className="mt-1 text-sm text-ink-500">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
@@ -91,7 +91,7 @@ export function Kpi({ label, value, sub, tone }: { label: string; value: string;
       <p className="text-sm text-ink-500">{label}</p>
       <p
         className={clsx(
-          "tnum mt-1 font-serif text-2xl font-bold sm:text-3xl",
+          "tnum mt-1 text-2xl font-extrabold sm:text-3xl",
           tone === "success" && "text-success",
           tone === "warning" && "text-warning",
           tone === "danger" && "text-danger",

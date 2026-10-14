@@ -23,7 +23,11 @@ export function RegisterWizard({ event }: { event: AmaiEvent }) {
   const router = useRouter();
   const search = useSearchParams();
   const [step, setStep] = useState(0);
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  // A fee card on the microsite links here with ?category=<id> to preselect it.
+  const [categoryId, setCategoryId] = useState<string | null>(() => {
+    const preset = search.get("category");
+    return event.categories.some((c) => c.id === preset) ? preset : null;
+  });
   const [memberId, setMemberId] = useState("");
   const [memberCheck, setMemberCheck] = useState<MemberCheck | null>(null);
   const [checking, setChecking] = useState(false);
@@ -387,7 +391,7 @@ function Stepper({ step }: { step: number }) {
 
 function StepTitle({ children, ref }: { children: React.ReactNode; ref: React.Ref<HTMLHeadingElement> }) {
   return (
-    <h2 id="step-title" ref={ref} tabIndex={-1} className="mb-6 font-serif text-[26px] font-semibold outline-none">
+    <h2 id="step-title" ref={ref} tabIndex={-1} className="mb-6 text-[26px] font-extrabold outline-none">
       {children}
     </h2>
   );
@@ -493,7 +497,7 @@ function Summary({ event, category }: { event: AmaiEvent; category: TicketCatego
     <Card className="overflow-hidden">
       <div className="bg-brand-indigo-600 p-5 text-white">
         <p className="text-xs font-semibold tracking-wider uppercase opacity-80">You’re registering for</p>
-        <p className="mt-1 font-serif text-lg leading-snug font-semibold">{event.title}</p>
+        <p className="mt-1 text-lg leading-snug font-extrabold">{event.title}</p>
         <p className="mt-1 text-sm opacity-85">
           {formatDateRange(event.startsAt, event.endsAt)} · {event.city}
         </p>

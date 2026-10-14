@@ -10,9 +10,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       >
         Skip to content
       </a>
-      <div className="bg-accent-amber-50 px-4 py-1.5 text-center text-xs text-ink-700">
-        Prototype with <strong>dummy data</strong>. No real payments, emails or SMS are sent.
-      </div>
       <Header />
       <main id="main" className="flex-1">
         {children}

@@ -18,7 +18,7 @@ export function AttendeePass({ reg }: { reg: Registration }) {
     <div className="mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-line-200 bg-white shadow-lg">
       <div className="bg-brand-indigo-600 px-6 py-5 text-white">
         <p className="text-xs font-semibold tracking-wider uppercase opacity-80">AMAI event pass</p>
-        <p className="mt-1 font-serif text-xl leading-snug font-semibold">{event.title}</p>
+        <p className="mt-1 text-xl leading-snug font-extrabold">{event.title}</p>
         <p className="mt-2 flex items-center gap-1.5 text-sm opacity-90">
           <MapPin className="size-4" aria-hidden /> {formatDateRange(event.startsAt, event.endsAt)} · {event.city}
         </p>

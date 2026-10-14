@@ -1,32 +1,29 @@
 import clsx from "clsx";
 import Link from "next/link";
 
-// Placeholder mark redrawn from the current raster logo. Replace with AMAI's official SVG (DESIGN_SYSTEM.md §6).
-export function Logo({ inverted, className }: { inverted?: boolean; className?: string }) {
+// ai_brand lockup from ai_site. Still a placeholder mark: replace with AMAI's official SVG (DESIGN_SYSTEM.md §6).
+export function Logo({ className }: { className?: string }) {
   return (
-    <Link href="/" className={clsx("flex items-center gap-3", className)} aria-label="AMAI home">
-      <svg viewBox="0 0 88 36" className="h-9 w-auto shrink-0" aria-hidden>
-        <ellipse cx="44" cy="18" rx="43" ry="17" fill={inverted ? "#fff" : "#3D4196"} />
+    <Link href="/" className={clsx("flex items-center gap-2.5", className)} aria-label="AMAI home">
+      <svg viewBox="0 0 250 100" width="90" height="36" className="h-9 w-auto shrink-0" aria-hidden>
+        <ellipse cx="125" cy="50" rx="125" ry="50" fill="#1e3a66" />
         <text
-          x="44"
-          y="24.5"
+          x="125"
+          y="53"
           textAnchor="middle"
-          fontFamily="Georgia, serif"
-          fontWeight="700"
-          fontSize="19"
+          dominantBaseline="middle"
+          fontFamily="Arial, Helvetica, sans-serif"
+          fontSize="60"
           letterSpacing="1"
-          fill={inverted ? "#3D4196" : "#fff"}
+          fill="#fff"
         >
           AMAI
         </text>
       </svg>
-      <span className="hidden leading-tight whitespace-nowrap sm:block">
-        <span className={clsx("block font-serif text-[15px] font-semibold", inverted ? "text-white" : "text-ink-900")}>
-          Alkali Manufacturers
-          <br />
-          Association of India
-        </span>
-        {inverted && <span className="mt-1 block text-xs text-white/75 italic">Promoting Sustainable Growth of Alkali Industry</span>}
+      <span className="text-[12px] leading-tight font-bold whitespace-nowrap text-ink-900">
+        Alkali Manufacturers
+        <br />
+        Association of India
       </span>
     </Link>
   );
