@@ -41,6 +41,7 @@ export const SITE = {
 } as const;
 
 export const URL_BUILDERS = {
+  pass: (token: string) => `/api/passes/${encodeURIComponent(token)}/`,
   staffRegistration: (publicId: string) => `/api/staff/registrations/${encodeURIComponent(publicId)}/`,
   staffRegistrationAction: (publicId: string, action: string) =>
     `/api/staff/registrations/${encodeURIComponent(publicId)}/${action}/`,
