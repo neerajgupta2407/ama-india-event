@@ -10,8 +10,17 @@ CLAUDE.md
 # Env & deploy
 .env
 .env.*
+!.env.example
 .vercel
 
 # Markdown docs kept local only (except the repo README)
 *.md
 !/README.md
+
+# Secrets & Python artefacts
+creds/
+*rzp-key*.csv
+**/.venv/
+__pycache__/
+*.pyc
+*.sqlite3

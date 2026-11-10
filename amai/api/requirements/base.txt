@@ -1,0 +1,10 @@
+Django>=5.2,<5.3
+djangorestframework
+django-environ
+django-cors-headers
+django-filter
+django-soft-delete
+psycopg[binary]
+requests
+brevo-python==1.2.0
+gunicorn

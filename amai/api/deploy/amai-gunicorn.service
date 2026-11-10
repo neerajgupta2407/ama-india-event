@@ -1,0 +1,25 @@
+[Unit]
+Description=amai_api gunicorn daemon
+After=network.target postgresql.service
+
+[Service]
+Type=notify
+User=amai
+Group=amai
+WorkingDirectory=/opt/amai_api
+EnvironmentFile=/opt/amai_api/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.staging
+ExecStart=/opt/amai_api/venv/bin/gunicorn \
+  --access-logfile /var/log/amai/gunicorn-access.log \
+  --error-logfile /var/log/amai/gunicorn-error.log \
+  --workers 2 \
+  --bind 127.0.0.1:8210 \
+  config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

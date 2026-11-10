@@ -1,0 +1,12 @@
+[Unit]
+Description=amai_api: confirm payments for open orders
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=amai
+Group=amai
+WorkingDirectory=/opt/amai_api
+EnvironmentFile=/opt/amai_api/.env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.staging
+ExecStart=/opt/amai_api/venv/bin/python manage.py reconcile_pending_orders

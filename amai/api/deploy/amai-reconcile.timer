@@ -1,0 +1,9 @@
+[Unit]
+Description=amai_api: check open payment orders every 10 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,128 @@
+name: Deploy staging
+
+# Runs on every push to main that touches amai/. Tests and builds first; the server is only
+# touched if both pass. The deploy job reuses the same scripts you run by hand
+# (amai/api/deploy/deploy-ci.sh and amai/frontend/web/deploy/deploy-staging.sh). CI logs in as the
+# limited `amai-deploy` user (see amai/api/deploy/setup-ci-user.sh), never as root.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "amai/**"
+      - ".github/workflows/deploy-staging.yml"
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits instead of cancelling a deploy halfway.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test-api:
+    name: API tests and lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amai/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # same minor version as the server's virtualenv
+          cache: pip
+          cache-dependency-path: amai/api/requirements/dev.txt
+      - run: pip install -r requirements/dev.txt
+      - name: Lint
+        run: |
+          black --check .
+          isort --check-only .
+          ruff check .
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+      - name: Tests
+        run: python manage.py test
+
+  check-web:
+    name: Web lint, types and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: amai/frontend/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: amai/frontend/web/package-lock.json
+      - run: npm ci
+      - run: npx next typegen
+      - run: npx eslint
+      - run: npx tsc --noEmit
+      - name: Build (same-origin API)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ""
+
+  deploy:
+    name: Deploy to staging server
+    needs: [test-api, check-web]
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: amai/frontend/web/package-lock.json
+
+      # The deploy scripts talk to the host alias "jg-stage", so CI defines the same alias.
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.STAGING_KNOWN_HOSTS }} # public host key, pinned so CI only talks to the real server
+          SSH_HOST: ${{ vars.STAGING_HOST }}
+          SSH_USER: ${{ vars.STAGING_SSH_USER }}
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "::error::The STAGING_SSH_KEY secret is not set on the 'staging' environment"
+            exit 1
+          fi
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<CONFIG
+          Host jg-stage
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          CONFIG
+
+      - name: Deploy API
+        working-directory: amai/api
+        run: ./deploy/deploy-ci.sh
+
+      - name: Deploy website
+        working-directory: amai/frontend/web
+        run: |
+          npm ci
+          ./deploy/deploy-staging.sh
+
+      - name: Smoke test
+        run: |
+          curl -fsS https://events.amaindiaevents.org/healthz/
+          curl -fsS https://events.amaindiaevents.org/api/events/alkali-industry-conference-2027/ > /dev/null
+          curl -fsS https://events.amaindiaevents.org/register/member/ > /dev/null
+          curl -fsS https://api.amaindiaevents.org/healthz/
+
+      - name: Remove deploy key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
