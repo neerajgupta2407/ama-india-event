@@ -10,7 +10,7 @@ set -euo pipefail
 HOST=${DEPLOY_HOST:-jg-stage}
 APP=/opt/amai_api
 
-rsync -az --delete \
+rsync -az --delete --no-owner --no-group \
   --exclude .venv --exclude venv --exclude .env --exclude '*.sqlite3' \
   --exclude __pycache__ --exclude .pytest_cache --exclude .ruff_cache \
   --exclude staticfiles --exclude 'tests' \

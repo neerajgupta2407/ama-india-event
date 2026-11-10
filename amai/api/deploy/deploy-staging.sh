@@ -6,7 +6,7 @@ set -euo pipefail
 HOST=${DEPLOY_HOST:-jg-stage}
 APP=/opt/amai_api
 
-rsync -az --delete \
+rsync -az --delete --no-owner --no-group \
   --exclude .venv --exclude venv --exclude .env --exclude '*.sqlite3' \
   --exclude __pycache__ --exclude .pytest_cache --exclude .ruff_cache \
   --exclude staticfiles --exclude 'tests' \
@@ -26,6 +26,14 @@ chown -R amai:amai /opt/amai_api/staticfiles
 install -m 644 deploy/amai-gunicorn.service /etc/systemd/system/amai-gunicorn.service
 systemctl daemon-reload
 systemctl enable amai-gunicorn >/dev/null 2>&1
+# This script runs as root. Give the CI user back the files it must be able to overwrite,
+# or the next automatic deploy fails with "Permission denied".
+if id amai-deploy >/dev/null 2>&1; then
+  chown -R amai-deploy:amai /opt/amai_api
+  chown root:amai /opt/amai_api/.env
+  chmod 640 /opt/amai_api/.env
+  chown -R amai:amai /opt/amai_api/staticfiles
+fi
 systemctl restart amai-gunicorn
 install -m 644 deploy/amai-reconcile.service /etc/systemd/system/amai-reconcile.service
 install -m 644 deploy/amai-reconcile.timer /etc/systemd/system/amai-reconcile.timer

@@ -9,4 +9,6 @@ DEST=/opt/amai_web/out
 
 NEXT_PUBLIC_API_URL= npm run build
 ssh "$HOST" "mkdir -p $DEST"
-rsync -az --delete out/ "$HOST:$DEST/"
+rsync -az --delete --no-owner --no-group out/ "$HOST:$DEST/"
+# Run by hand as root, this would leave root-owned files the CI user cannot overwrite.
+ssh "$HOST" 'if [ "$(id -u)" = 0 ] && id amai-deploy >/dev/null 2>&1; then chown -R amai-deploy:amai-deploy /opt/amai_web; fi'
