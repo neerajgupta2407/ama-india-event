@@ -4,6 +4,7 @@ from enquiries.views import (
     EnquiryCreateView,
     StaffEnquiryDetailView,
     StaffEnquiryListView,
+    StaffEnquiryStatusView,
 )
 
 urlpatterns = [
@@ -13,5 +14,10 @@ urlpatterns = [
         "staff/enquiries/<uuid:pk>/",
         StaffEnquiryDetailView.as_view(),
         name="staff-enquiry-detail",
+    ),
+    path(
+        "staff/enquiries/<uuid:pk>/status/",
+        StaffEnquiryStatusView.as_view(),
+        name="staff-enquiry-status",
     ),
 ]

@@ -19,3 +19,14 @@ class PaymentAttemptStatus(models.TextChoices):
     AUTHORIZED = "authorized", "Authorized"
     CAPTURED = "captured", "Captured"
     FAILED = "failed", "Failed"
+
+
+class ReconciliationIssue(models.TextChoices):
+    MISMATCH = "mismatch", "Amount, currency or order did not match"
+    PAID_NOT_CAPTURED = (
+        "paid_not_captured",
+        "Marked paid here but the provider shows no matching capture",
+    )
+    DUPLICATE_CAPTURE = "duplicate_capture", "More than one capture for one order"
+    STALE_PENDING = "stale_pending", "Pending for over an hour"
+    PROVIDER_UNREACHABLE = "provider_unreachable", "The provider could not be asked"

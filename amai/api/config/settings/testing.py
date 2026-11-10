@@ -12,3 +12,4 @@ EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 STAFF_ALERT_EMAILS = ["staff@example.com"]
 USE_BREVO_EMAIL = False
 TEST_TO_EMAIL = ""
+SITE_URL = "https://example.test"

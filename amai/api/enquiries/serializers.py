@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from core.validators import mobile_validator
+from enquiries.choices import EnquiryStatus
 from enquiries.models import Enquiry
 
 
@@ -34,3 +35,7 @@ class EnquirySerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = fields
+
+
+class EnquiryStatusSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=EnquiryStatus.choices)

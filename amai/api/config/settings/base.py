@@ -70,6 +70,11 @@ DATABASES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ATOMIC_REQUESTS = True
 
+# Staff sessions: 12 hours, HttpOnly (Django default), same-site only.
+SESSION_COOKIE_AGE = 60 * 60 * 12
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
 LANGUAGE_CODE = "en-in"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
@@ -88,7 +93,10 @@ REST_FRAMEWORK = {
         "enquiry": "5/hour",
         "registration": "10/hour",
         "order_status": "300/hour",
+        "pass": "120/hour",
         "quote": "300/hour",
+        "staff_login_ip": "20/hour",
+        "staff_login_email": "8/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
@@ -118,4 +126,6 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="events@ama-india.org")
 # Outside production every email is redirected here when set.
 TEST_TO_EMAIL = env("TEST_TO_EMAIL", default="")
 # Staff who get an alert for every enquiry and registration request.
+# Public address of the website, used in links we email (attendee passes).
+SITE_URL = env("SITE_URL", default="https://events.amaindiaevents.org")
 STAFF_ALERT_EMAILS = env.list("STAFF_ALERT_EMAILS", default=["hkanand@ama-india.org"])

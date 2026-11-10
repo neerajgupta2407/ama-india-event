@@ -22,6 +22,13 @@ export class ApiError extends Error {
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
+/** Django's CSRF cookie, sent back as a header on anything that changes data (staff sessions need it). */
+function csrfToken(): string {
+  if (typeof document === "undefined") return "";
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : "";
+}
+
 /**
  * Thin fetch wrapper. The returned functions are stable as long as the config
  * values are, so they are safe in dependency arrays. Still destructure
@@ -39,6 +46,7 @@ export function useApi(config?: ApiConfig) {
         headers: {
           Accept: "application/json",
           ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+          ...(method !== "GET" && csrfToken() ? { "X-CSRFToken": csrfToken() } : {}),
           ...(JSON.parse(headersKey) as Record<string, string>),
         },
         body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -53,10 +61,24 @@ export function useApi(config?: ApiConfig) {
   );
 
   const get = useCallback(<T>(path: string) => request<T>("GET", path), [request]);
+
+  /** Fetches a file (the CSV export) with the staff session cookie and returns it with its name. */
+  const download = useCallback(
+    async (path: string): Promise<{ blob: Blob; filename: string }> => {
+      const response = await fetch(`${baseURL}${path}`, { credentials: "include" });
+      if (!response.ok) {
+        throw new ApiError(response.status, await response.json().catch(() => null));
+      }
+      const disposition = response.headers.get("Content-Disposition") ?? "";
+      const filename = /filename="?([^";]+)"?/.exec(disposition)?.[1] ?? "download";
+      return { blob: await response.blob(), filename };
+    },
+    [baseURL],
+  );
   const post = useCallback(<T>(path: string, body?: unknown) => request<T>("POST", path, body), [request]);
   const put = useCallback(<T>(path: string, body?: unknown) => request<T>("PUT", path, body), [request]);
   const patch = useCallback(<T>(path: string, body?: unknown) => request<T>("PATCH", path, body), [request]);
   const del = useCallback(<T>(path: string) => request<T>("DELETE", path), [request]);
 
-  return useMemo(() => ({ get, post, put, patch, del }), [get, post, put, patch, del]);
+  return useMemo(() => ({ get, post, put, patch, del, download }), [get, post, put, patch, del, download]);
 }

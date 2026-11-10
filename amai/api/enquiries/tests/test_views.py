@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.test import TestCase
@@ -10,10 +9,10 @@ from model_bakery import baker
 from rest_framework.test import APIClient
 from rest_framework.throttling import SimpleRateThrottle
 
+from audit.models import AuditEvent
+from core.tests.helpers import make_staff
 from enquiries.choices import EnquiryStatus
 from enquiries.models import Enquiry
-
-User = get_user_model()
 
 VALID = {
     "name": "Asha Rao",
@@ -96,15 +95,20 @@ class StaffEnquiryViewTests(TestCase):
 
         self.assertIn(response.status_code, (401, 403))
 
-    def test_non_staff_user_cannot_list(self):
-        self.client.force_authenticate(baker.make(User, is_staff=False))
+    def test_staff_without_a_role_cannot_list(self):
+        self.client.force_authenticate(make_staff())
 
         response = self.client.get(self.list_url)
 
         self.assertEqual(403, response.status_code)
 
-    def test_staff_can_list_and_filter_by_status(self):
-        self.client.force_authenticate(baker.make(User, is_staff=True))
+    def test_check_in_operators_cannot_see_enquiries(self):
+        self.client.force_authenticate(make_staff("checkin_operator"))
+
+        self.assertEqual(403, self.client.get(self.list_url).status_code)
+
+    def test_viewer_can_list_and_filter_by_status(self):
+        self.client.force_authenticate(make_staff("viewer"))
 
         everything = self.client.get(self.list_url).json()
         only_new = self.client.get(self.list_url, {"status": EnquiryStatus.NEW}).json()
@@ -113,7 +117,7 @@ class StaffEnquiryViewTests(TestCase):
         self.assertEqual([str(self.new.id)], [r["id"] for r in only_new["results"]])
 
     def test_staff_can_search_by_name(self):
-        self.client.force_authenticate(baker.make(User, is_staff=True))
+        self.client.force_authenticate(make_staff("viewer"))
 
         response = self.client.get(self.list_url, {"q": "vikram"})
 
@@ -122,7 +126,7 @@ class StaffEnquiryViewTests(TestCase):
         )
 
     def test_staff_can_open_one_enquiry(self):
-        self.client.force_authenticate(baker.make(User, is_staff=True))
+        self.client.force_authenticate(make_staff("viewer"))
 
         response = self.client.get(
             reverse("staff-enquiry-detail", kwargs={"pk": self.new.id})
@@ -130,3 +134,39 @@ class StaffEnquiryViewTests(TestCase):
 
         self.assertEqual(200, response.status_code)
         self.assertEqual("Asha Rao", response.json()["name"])
+
+
+class StaffEnquiryStatusViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.enquiry = baker.make(Enquiry, status=EnquiryStatus.NEW)
+        self.url = reverse("staff-enquiry-status", kwargs={"pk": self.enquiry.id})
+
+    def test_ops_can_move_an_enquiry_and_it_is_audited(self):
+        ops = make_staff("ops")
+        self.client.force_authenticate(ops)
+
+        response = self.client.patch(self.url, {"status": "contacted"}, format="json")
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("contacted", response.json()["status"])
+        event = AuditEvent.objects.get(action="enquiry.status")
+        self.assertEqual({"before": "new", "after": "contacted"}, event.data)
+        self.assertEqual(ops.email, event.actor_label)
+
+    def test_viewer_cannot_change_status(self):
+        self.client.force_authenticate(make_staff("viewer"))
+
+        response = self.client.patch(self.url, {"status": "closed"}, format="json")
+
+        self.assertEqual(403, response.status_code)
+        self.enquiry.refresh_from_db()
+        self.assertEqual(EnquiryStatus.NEW, self.enquiry.status)
+
+    def test_unknown_status_is_rejected(self):
+        self.client.force_authenticate(make_staff("ops"))
+
+        self.assertEqual(
+            400,
+            self.client.patch(self.url, {"status": "bogus"}, format="json").status_code,
+        )

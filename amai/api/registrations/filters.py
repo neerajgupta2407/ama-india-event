@@ -14,6 +14,9 @@ class RegistrationFilter(filters.FilterSet):
     member_validation = filters.CharFilter(
         field_name="member_validation", lookup_expr="exact"
     )
+    payment_status = filters.CharFilter(
+        field_name="orders__status", lookup_expr="exact", distinct=True
+    )
     q = filters.CharFilter(method="filter_search")
     created_after = filters.DateTimeFilter(field_name="created_at", lookup_expr="gte")
     created_before = filters.DateTimeFilter(field_name="created_at", lookup_expr="lte")
@@ -29,4 +32,5 @@ class RegistrationFilter(filters.FilterSet):
             | Q(company_name__icontains=value)
             | Q(email__icontains=value)
             | Q(mobile__icontains=value)
-        )
+            | Q(orders__reference__icontains=value)
+        ).distinct()

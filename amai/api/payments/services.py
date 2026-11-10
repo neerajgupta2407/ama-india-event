@@ -13,6 +13,7 @@ from payments.choices import OrderStatus, PaymentAttemptStatus
 from payments.models import Order, PaymentAttempt, WebhookEvent, hash_token
 from payments.providers import get_provider
 from payments.providers.base import ProviderError
+from qr.services import PassService
 from registrations.choices import RegistrationStatus
 from registrations.models import Registration
 
@@ -168,7 +169,10 @@ class PaymentService:
             registration = order.registration
             registration.status = RegistrationStatus.CONFIRMED
             registration.save(update_fields=["status", "updated_at"])
-            transaction.on_commit(lambda: PaymentService._notify_paid(order, payment))
+            _, pass_token = PassService.issue(registration)
+            transaction.on_commit(
+                lambda: PaymentService._notify_paid(order, payment, pass_token)
+            )
             return order
 
         if payments and all(p.status == PaymentAttemptStatus.FAILED for p in payments):
@@ -234,7 +238,7 @@ class PaymentService:
         )
 
     @staticmethod
-    def _notify_paid(order, payment):
+    def _notify_paid(order, payment, pass_token):
         registration = order.registration
         total = format_money(order.amount_minor, order.currency)
         send_email(
@@ -244,6 +248,9 @@ class PaymentService:
                 f"We have received your payment of {total} for the {registration.event.title}. "
                 f"Your registration {registration.public_id} is confirmed.\n\n"
                 f"Order: {order.reference}\nPayment ID: {payment.id}\n\n"
+                f"Your entry pass (show it at the venue): {PassService.pass_url(pass_token)}\n"
+                f"It admits {registration.delegate_count or 'your group'} "
+                f"delegate{'s' if (registration.delegate_count or 2) > 1 else ''}.\n\n"
                 "Alkali Manufacturers Association of India\n"
             ),
             recipients=[registration.email],

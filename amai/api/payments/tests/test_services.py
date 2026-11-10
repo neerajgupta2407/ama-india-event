@@ -16,6 +16,8 @@ from payments.tests.helpers import (
     sign,
     webhook_body,
 )
+from qr.models import AttendeePass
+from qr.services import PassService
 from registrations.choices import RegistrationStatus
 
 
@@ -260,3 +262,57 @@ class ProviderRegistryTests(TestCase):
     def test_unknown_provider_raises(self):
         with self.assertRaises(ValueError):
             get_provider("nope")
+
+
+class PassIssuedOnPaymentTests(TestCase):
+    @patch("payments.providers.razorpay.requests.post")
+    def setUp(self, post):
+        post.return_value = razorpay_create_order_response("order_TEST1")
+        self.registration = make_registration(delegates="2")
+        self.order = PaymentService.start_payment(self.registration).order
+
+    def pay(self):
+        with self.captureOnCommitCallbacks(execute=True):
+            PaymentService.apply_payments(self.order.pk, parse(razorpay_payment()))
+
+    def test_a_successful_payment_issues_an_entry_pass_for_every_delegate(self):
+        self.pay()
+
+        attendee_pass = AttendeePass.objects.get(registration=self.registration)
+        self.assertEqual(2, attendee_pass.admits)
+        self.assertIsNone(attendee_pass.revoked_at)
+
+    def test_the_receipt_email_carries_a_working_pass_link_and_staff_do_not_get_it(
+        self,
+    ):
+        self.pay()
+
+        receipt = next(m for m in mail.outbox if m.to == ["asha@example.com"])
+        staff_alert = next(m for m in mail.outbox if m.to == ["staff@example.com"])
+        url = next(
+            word
+            for word in receipt.body.split()
+            if word.startswith("https://example.test/c/?t=")
+        )
+        self.assertEqual(
+            self.registration,
+            PassService.find_by_token(url.split("t=")[1]).registration,
+        )
+        self.assertNotIn("/c/?t=", staff_alert.body)
+
+    def test_a_replayed_capture_does_not_issue_a_second_pass(self):
+        self.pay()
+        first_hash = AttendeePass.objects.get().token_hash
+
+        self.pay()
+
+        self.assertEqual(1, AttendeePass.objects.count())
+        self.assertEqual(first_hash, AttendeePass.objects.get().token_hash)
+
+    def test_a_failed_payment_issues_no_pass(self):
+        with self.captureOnCommitCallbacks(execute=True):
+            PaymentService.apply_payments(
+                self.order.pk, parse(razorpay_payment(status="failed"))
+            )
+
+        self.assertEqual(0, AttendeePass.objects.count())

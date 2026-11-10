@@ -1,7 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.test import TestCase
@@ -13,10 +12,7 @@ from rest_framework.test import APIClient
 
 from events.choices import EventStatus
 from events.models import Event, TicketCategory
-from registrations.choices import RegistrationStatus
 from registrations.models import Registration
-
-User = get_user_model()
 
 
 class RegistrationRequestCreateViewTests(TestCase):
@@ -121,63 +117,3 @@ class RegistrationRequestCreateViewTests(TestCase):
 
         self.assertEqual(201, response.status_code)
         self.assertEqual(0, Registration.objects.count())
-
-
-class StaffRegistrationViewTests(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.list_url = reverse("staff-registration-list")
-        self.event = baker.make(Event, slug="conf-2027", registration_prefix="AC27")
-        self.member = baker.make(TicketCategory, event=self.event, code="member")
-        self.intl = baker.make(TicketCategory, event=self.event, code="international")
-        self.first = baker.make(
-            Registration,
-            public_id="AMAI-AC27-000001",
-            event=self.event,
-            ticket_category=self.member,
-            full_name="Asha Rao",
-            status=RegistrationStatus.REQUESTED,
-        )
-        self.second = baker.make(
-            Registration,
-            public_id="AMAI-AC27-000002",
-            event=self.event,
-            ticket_category=self.intl,
-            full_name="John Smith",
-            status=RegistrationStatus.CONFIRMED,
-        )
-
-    def test_anonymous_and_non_staff_are_denied(self):
-        self.assertIn(self.client.get(self.list_url).status_code, (401, 403))
-
-        self.client.force_authenticate(baker.make(User, is_staff=False))
-        self.assertEqual(403, self.client.get(self.list_url).status_code)
-
-    def test_staff_can_filter_by_category_status_and_search(self):
-        self.client.force_authenticate(baker.make(User, is_staff=True))
-
-        def ids(params):
-            return [
-                r["public_id"]
-                for r in self.client.get(self.list_url, params).json()["results"]
-            ]
-
-        self.assertEqual(2, self.client.get(self.list_url).json()["count"])
-        self.assertEqual(["AMAI-AC27-000002"], ids({"category": "international"}))
-        self.assertEqual(
-            ["AMAI-AC27-000001"], ids({"status": RegistrationStatus.REQUESTED})
-        )
-        self.assertEqual(["AMAI-AC27-000002"], ids({"q": "smith"}))
-        self.assertEqual(["AMAI-AC27-000001"], ids({"q": "000001"}))
-        self.assertEqual([], ids({"event": "other-event"}))
-
-    def test_staff_can_open_one_registration(self):
-        self.client.force_authenticate(baker.make(User, is_staff=True))
-
-        response = self.client.get(
-            reverse("staff-registration-detail", kwargs={"pk": self.first.id})
-        )
-
-        self.assertEqual(200, response.status_code)
-        self.assertEqual("conf-2027", response.json()["event"])
-        self.assertEqual("member", response.json()["category"])

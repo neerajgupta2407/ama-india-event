@@ -1,6 +1,7 @@
 import hashlib
 import secrets
 
+from django.conf import settings
 from django.db import models
 
 from core.models import UUIDBaseModel
@@ -88,6 +89,25 @@ class WebhookEvent(UUIDBaseModel):
     payload = models.JSONField(default=dict)
     processed_at = models.DateTimeField(null=True, blank=True)
     processing_error = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class ReconciliationRun(UUIDBaseModel):
+    """One check of our orders against the payment provider. Kept so finance can see history."""
+
+    triggered_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    triggered_by_label = models.CharField(max_length=254, blank=True)
+    event_slug = models.CharField(max_length=100, blank=True)
+    orders_checked = models.PositiveIntegerField(default=0)
+    matched = models.PositiveIntegerField(default=0)
+    recovered = models.PositiveIntegerField(default=0)
+    # [{"order": "ORD-...", "registration": "AMAI-...", "issue": "mismatch", "detail": "..."}]
+    exceptions = models.JSONField(default=list)
+    finished_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

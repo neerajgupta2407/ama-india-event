@@ -10,6 +10,22 @@ export const URLS = {
   ENQUIRIES: "/api/enquiries/",
   REGISTRATION_REQUESTS: "/api/registrations/requests/",
   REGISTRATION_QUOTE: "/api/registrations/quote/",
+  // Staff dashboard
+  STAFF_CSRF: "/api/staff/auth/csrf/",
+  STAFF_LOGIN: "/api/staff/auth/login/",
+  STAFF_LOGOUT: "/api/staff/auth/logout/",
+  STAFF_ME: "/api/staff/auth/me/",
+  STAFF_OVERVIEW: "/api/staff/overview/",
+  STAFF_REGISTRATIONS: "/api/staff/registrations/",
+  STAFF_REGISTRATIONS_EXPORT: "/api/staff/registrations/export/",
+  STAFF_ORDERS: "/api/staff/orders/",
+  STAFF_RECONCILIATION: "/api/staff/reconciliation/",
+  STAFF_RECONCILIATION_RUN: "/api/staff/reconciliation/run/",
+  STAFF_CHECKIN: "/api/staff/checkin/",
+  STAFF_CHECKIN_SEARCH: "/api/staff/checkin/search/",
+  STAFF_CHECKIN_RECENT: "/api/staff/checkin/recent/",
+  STAFF_ENQUIRIES: "/api/staff/enquiries/",
+  STAFF_EVENTS: "/api/staff/events/",
 } as const;
 
 export const SITE = {
@@ -25,6 +41,12 @@ export const SITE = {
 } as const;
 
 export const URL_BUILDERS = {
+  staffRegistration: (publicId: string) => `/api/staff/registrations/${encodeURIComponent(publicId)}/`,
+  staffRegistrationAction: (publicId: string, action: string) =>
+    `/api/staff/registrations/${encodeURIComponent(publicId)}/${action}/`,
+  staffEnquiryStatus: (id: string) => `/api/staff/enquiries/${encodeURIComponent(id)}/status/`,
+  staffEventSettings: (slug: string) => `/api/staff/events/${encodeURIComponent(slug)}/settings/`,
+  staffCategory: (id: string) => `/api/staff/ticket-categories/${encodeURIComponent(id)}/`,
   orderStatus: (reference: string) => `/api/orders/${encodeURIComponent(reference)}/status/`,
   whatsapp: (message: string) => `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(message)}`,
 };

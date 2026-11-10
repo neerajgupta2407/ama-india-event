@@ -1,23 +1,18 @@
 from django.db import transaction
 
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from core.mixins import HoneypotMixin
-from core.permissions import IsStaffRole
 from core.throttles import QuoteRateThrottle, RegistrationRateThrottle
 from events.services import PricingService
 from payments.services import PaymentService
 from registrations.choices import DELEGATE_NUMBERS
-from registrations.filters import RegistrationFilter
-from registrations.models import Registration
 from registrations.serializers import (
     QuoteRequestSerializer,
     RegistrationReceiptSerializer,
     RegistrationRequestSerializer,
-    RegistrationSerializer,
 )
 from registrations.services import RegistrationService
 
@@ -100,20 +95,3 @@ class RegistrationQuoteView(generics.GenericAPIView):
             )
         quote = PricingService.quote_order(category=category, delegates=count)
         return Response({"payable_online": True, **quote.as_breakup()})
-
-
-class StaffRegistrationQuerysetMixin:
-    permission_classes = [IsStaffRole]
-    serializer_class = RegistrationSerializer
-    queryset = Registration.objects.select_related("event", "ticket_category")
-
-
-class StaffRegistrationListView(StaffRegistrationQuerysetMixin, generics.ListAPIView):
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = RegistrationFilter
-
-
-class StaffRegistrationDetailView(
-    StaffRegistrationQuerysetMixin, generics.RetrieveAPIView
-):
-    pass
