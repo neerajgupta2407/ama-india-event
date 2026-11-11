@@ -161,8 +161,12 @@ class RegistrationRequestCreateViewTests(TestCase):
             "additional_delegates": [delegate] * 4,
         }
 
-        self.assertEqual(400, self.client.post(self.url, too_few, format="json").status_code)
-        self.assertEqual(201, self.client.post(self.url, enough, format="json").status_code)
+        self.assertEqual(
+            400, self.client.post(self.url, too_few, format="json").status_code
+        )
+        self.assertEqual(
+            201, self.client.post(self.url, enough, format="json").status_code
+        )
 
     def test_honeypot_is_accepted_but_not_saved(self):
         response = self.client.post(
