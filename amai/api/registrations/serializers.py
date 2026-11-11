@@ -4,7 +4,7 @@ from audit.services import AuditService
 from core.validators import mobile_validator
 from events.models import Event, TicketCategory
 from payments.models import Order, PaymentAttempt
-from registrations.choices import DelegateCount
+from registrations.choices import DELEGATE_NUMBERS, DelegateCount
 from registrations.models import Registration
 
 
@@ -31,6 +31,12 @@ class EventCategoryValidationMixin:
         return attrs
 
 
+class AdditionalDelegateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+    designation = serializers.CharField(max_length=200)
+
+
 class RegistrationRequestSerializer(
     EventCategoryValidationMixin, serializers.Serializer
 ):
@@ -44,8 +50,27 @@ class RegistrationRequestSerializer(
     email = serializers.EmailField()
     delegates = serializers.ChoiceField(choices=DelegateCount.choices)
     message = serializers.CharField(required=False, allow_blank=True)
+    # Everyone beyond the person registering. Required only when there is more than one delegate.
+    additional_delegates = AdditionalDelegateSerializer(
+        many=True, required=False, max_length=50
+    )
     # Honeypot, see core.mixins.HoneypotMixin
     website = serializers.CharField(required=False, allow_blank=True, max_length=200)
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        needed = DELEGATE_NUMBERS[attrs["delegates"]]
+        # "5 or more" has no exact number: the form asks for at least four more people.
+        expected = 4 if needed is None else needed - 1
+        given = len(attrs.get("additional_delegates", []))
+        if given < expected or (needed is not None and given > expected):
+            raise serializers.ValidationError(
+                {
+                    "additional_delegates": f"Please give the details of {expected}"
+                    f"{' or more' if needed is None else ''} additional delegate(s)."
+                }
+            )
+        return attrs
 
 
 class QuoteRequestSerializer(EventCategoryValidationMixin, serializers.Serializer):
@@ -133,6 +158,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             "email",
             "delegates",
             "message",
+            "additional_delegates",
             "currency",
             "quoted_base_minor",
             "quoted_gst_minor",

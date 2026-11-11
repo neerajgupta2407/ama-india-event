@@ -35,6 +35,9 @@ class RegistrationStartsPaymentTests(TestCase):
             "mobile": "+91 98100 12345",
             "email": "vikram@example.com",
             "delegates": "2",
+            "additional_delegates": [
+                {"name": "Dev", "email": "dev@example.com", "designation": "Manager"}
+            ],
         }
 
     @patch("payments.providers.razorpay.requests.post")
@@ -289,6 +292,10 @@ class RegistrationQuoteViewTests(TestCase):
                 "mobile": "9810012345",
                 "email": "vikram@example.com",
                 "delegates": "3",
+                "additional_delegates": [
+                    {"name": "A", "email": "a@example.com", "designation": "Manager"},
+                    {"name": "B", "email": "b@example.com", "designation": "Chemist"},
+                ],
             },
             format="json",
         )

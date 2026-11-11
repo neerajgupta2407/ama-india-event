@@ -1,4 +1,4 @@
-import type { CategoryKey, Currency, RegistrationCategory } from "@/types/registration";
+import type { AdditionalDelegate, CategoryKey, Currency, RegistrationCategory } from "@/types/registration";
 
 export const CATEGORIES: Record<CategoryKey, RegistrationCategory> = {
   member: {
@@ -32,6 +32,25 @@ export const CATEGORIES: Record<CategoryKey, RegistrationCategory> = {
 };
 
 export const DELEGATE_OPTIONS = ["1", "2", "3", "4", "5 or more"] as const;
+
+export const EMPTY_DELEGATE: AdditionalDelegate = { name: "", email: "", designation: "" };
+
+/** How many other delegates must be named: one fewer than the count, and at least four for "5 or more". */
+export function minAdditionalDelegates(delegates: string): number {
+  if (delegates === "5 or more") return 4;
+  const count = Number(delegates);
+  return count > 1 ? count - 1 : 0;
+}
+
+/** "5 or more" is open-ended, so the visitor can add further delegates. */
+export const hasOpenDelegateList = (delegates: string) => delegates === "5 or more";
+
+/** The delegate rows for a new count, keeping what was already typed. */
+export function resizeDelegates(current: AdditionalDelegate[], delegates: string): AdditionalDelegate[] {
+  const wanted = minAdditionalDelegates(delegates);
+  const kept = hasOpenDelegateList(delegates) ? current : current.slice(0, wanted);
+  return [...kept, ...Array.from({ length: Math.max(0, wanted - kept.length) }, () => ({ ...EMPTY_DELEGATE }))];
+}
 
 export function isCategoryKey(value: string): value is CategoryKey {
   return value in CATEGORIES;

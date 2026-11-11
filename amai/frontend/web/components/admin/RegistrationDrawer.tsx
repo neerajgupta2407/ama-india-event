@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Drawer, Money, Notice, ReasonDialog, Spinner, StatusBadge } from "@/components/admin/ui";
 import { URL_BUILDERS } from "@/config/urls";
@@ -177,6 +177,16 @@ export default function RegistrationDrawer({
               <dd>{data.category_name}</dd>
               <dt>Delegates</dt>
               <dd>{data.delegates}</dd>
+              {data.additional_delegates.map((delegate, index) => (
+                <Fragment key={index}>
+                  <dt>Delegate {index + 2}</dt>
+                  <dd>
+                    {delegate.name}
+                    <br />
+                    {delegate.email} · {delegate.designation}
+                  </dd>
+                </Fragment>
+              ))}
               <dt>List price</dt>
               <dd>
                 <Money minor={data.quoted_total_minor} currency={data.currency} /> per person, incl. GST

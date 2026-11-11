@@ -41,6 +41,8 @@ class Registration(UUIDBaseModel):
     email = models.EmailField()
     delegates = models.CharField(max_length=20, choices=DelegateCount.choices)
     message = models.TextField(blank=True)
+    # The other delegates, beyond the person registering: [{"name", "email", "designation"}].
+    additional_delegates = models.JSONField(default=list, blank=True)
 
     # Price per participant at the time of the request (minor units).
     currency = models.CharField(max_length=3, choices=Currency.choices)

@@ -2161,6 +2161,36 @@ padding: 10px;
   opacity: .65;
   cursor: not-allowed;
 }
+.ai_reg_sub {
+  margin: 8px 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--navy);
+}
+.ai_reg_delegate {
+  margin-top: 12px;
+}
+.ai_reg_delegate > .row {
+  border: 1px solid #dde7ee;
+  border-radius: 14px;
+  background: #fff;
+  margin: 0;
+  padding: 4px 12px 16px;
+}
+.ai_reg_delegate_head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  color: var(--navy);
+}
+.ai_reg_link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--blue);
+  font-size: 14px;
+}
 .ai_reg_review {
   border: 1px solid #dde7ee;
   border-radius: 18px;

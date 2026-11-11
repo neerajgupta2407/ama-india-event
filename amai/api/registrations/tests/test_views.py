@@ -39,7 +39,14 @@ class RegistrationRequestCreateViewTests(TestCase):
             "mobile": "+91 98100 12345",
             "email": "asha@example.com",
             "delegates": "2",
-            "message": "Two extra delegates to follow.",
+            "message": "Please seat us together.",
+            "additional_delegates": [
+                {
+                    "name": "Dev Rao",
+                    "email": "dev@example.com",
+                    "designation": "Plant Manager",
+                }
+            ],
         }
 
     def test_valid_request_returns_receipt_and_sends_emails(self):
@@ -109,6 +116,53 @@ class RegistrationRequestCreateViewTests(TestCase):
 
         self.assertEqual(400, response.status_code)
         self.assertEqual({"email", "mobile", "delegates", "name"}, set(response.json()))
+
+    def test_additional_delegates_are_saved_and_emailed_to_staff(self):
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(self.url, self.payload, format="json")
+
+        registration = Registration.objects.get()
+        self.assertEqual(
+            self.payload["additional_delegates"], registration.additional_delegates
+        )
+        self.assertIn("Dev Rao | dev@example.com | Plant Manager", mail.outbox[0].body)
+
+    def test_single_delegate_needs_no_additional_details(self):
+        payload = {**self.payload, "delegates": "1", "additional_delegates": []}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(201, response.status_code)
+
+    def test_missing_additional_delegates_are_rejected(self):
+        payload = {**self.payload, "delegates": "3"}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual({"additional_delegates"}, set(response.json()))
+
+    def test_additional_delegate_needs_name_email_and_designation(self):
+        payload = {
+            **self.payload,
+            "additional_delegates": [{"name": "Dev Rao", "email": "nope"}],
+        }
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual({"additional_delegates"}, set(response.json()))
+
+    def test_five_or_more_needs_at_least_four_additional_delegates(self):
+        delegate = self.payload["additional_delegates"][0]
+        too_few = {**self.payload, "delegates": "5 or more"}
+        enough = {
+            **too_few,
+            "additional_delegates": [delegate] * 4,
+        }
+
+        self.assertEqual(400, self.client.post(self.url, too_few, format="json").status_code)
+        self.assertEqual(201, self.client.post(self.url, enough, format="json").status_code)
 
     def test_honeypot_is_accepted_but_not_saved(self):
         response = self.client.post(

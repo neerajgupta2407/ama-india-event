@@ -37,6 +37,7 @@ class RegistrationService:
             email=data["email"],
             delegates=data["delegates"],
             message=data.get("message", ""),
+            additional_delegates=data.get("additional_delegates", []),
             currency=quote.currency,
             quoted_base_minor=quote.base_minor,
             quoted_gst_minor=quote.gst_minor,
@@ -65,7 +66,8 @@ class RegistrationService:
             f"Company: {registration.company_name}\n"
             f"Mobile: {registration.mobile}\n"
             f"Email: {registration.email}\n"
-            f"Membership check: {registration.get_member_validation_display()}\n\n"
+            f"Membership check: {registration.get_member_validation_display()}\n"
+            f"{RegistrationService._delegate_lines(registration)}\n"
             f"Message:\n{registration.message}\n"
         )
         return send_email(
@@ -73,6 +75,18 @@ class RegistrationService:
             body=body,
             recipients=settings.STAFF_ALERT_EMAILS,
         )
+
+    @staticmethod
+    def _delegate_lines(registration):
+        if not registration.additional_delegates:
+            return ""
+        lines = "\nAdditional delegates:\n"
+        for number, delegate in enumerate(registration.additional_delegates, start=2):
+            lines += (
+                f"{number}. {delegate['name']} | {delegate['email']} | "
+                f"{delegate['designation']}\n"
+            )
+        return lines
 
     @staticmethod
     def _acknowledge(registration):

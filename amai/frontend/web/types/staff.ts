@@ -1,4 +1,4 @@
-import type { Currency } from "@/types/registration";
+import type { AdditionalDelegate, Currency } from "@/types/registration";
 
 export type StaffRole = "ops" | "finance" | "membership" | "event_admin" | "checkin_operator" | "viewer";
 
@@ -63,6 +63,7 @@ export interface RegistrationRow {
   email: string;
   delegates: string;
   message: string;
+  additional_delegates: AdditionalDelegate[];
   currency: Currency;
   quoted_base_minor: number;
   quoted_gst_minor: number;

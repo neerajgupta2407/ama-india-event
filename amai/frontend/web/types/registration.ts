@@ -16,6 +16,15 @@ export interface RegistrationCategory {
   tag?: string;
 }
 
+/** One delegate beyond the person registering. */
+export interface AdditionalDelegate {
+  name: string;
+  email: string;
+  designation: string;
+}
+
+export type AdditionalDelegateErrors = Partial<Record<keyof AdditionalDelegate, string>>;
+
 export interface RegistrationFormValues {
   name: string;
   company_name: string;
@@ -23,9 +32,10 @@ export interface RegistrationFormValues {
   email: string;
   delegates: string;
   message: string;
+  additional_delegates: AdditionalDelegate[];
 }
 
-export type RegistrationErrors = Partial<Record<keyof RegistrationFormValues, string>>;
+export type RegistrationErrors = Partial<Record<Exclude<keyof RegistrationFormValues, "additional_delegates">, string>>;
 
 export interface RegistrationRequestPayload extends RegistrationFormValues {
   event: string;
