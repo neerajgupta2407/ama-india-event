@@ -27,18 +27,32 @@ def send_email(*, subject, body, recipients):
         subject = f"[To: {original}] {subject}"
         recipients = [settings.TEST_TO_EMAIL]
 
+    if settings.USE_BREVO_EMAIL:
+        return _send_through_brevo(subject, body, recipients)
     try:
-        if settings.USE_BREVO_EMAIL:
-            service = BrevoService()
-            results = [
-                service.send_email(
-                    subject=subject, recipient_email=recipient, text_content=body
-                )
-                for recipient in recipients
-            ]
-            return any(results)
         send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
     except Exception:
         logger.exception("Could not send email %r", subject)
         return False
     return True
+
+
+def _send_through_brevo(subject, body, recipients):
+    """One message per recipient, each tried on its own so one failure never blocks the rest."""
+    try:
+        service = BrevoService()
+    except Exception:
+        logger.exception("Brevo is not set up, so email %r was not sent", subject)
+        return False
+    sent = False
+    for recipient in recipients:
+        try:
+            sent = (
+                service.send_email(
+                    subject=subject, recipient_email=recipient, text_content=body
+                )
+                or sent
+            )
+        except Exception:
+            logger.exception("Could not send email %r through Brevo", subject)
+    return sent

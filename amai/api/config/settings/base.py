@@ -119,6 +119,10 @@ RAZORPAY_WEBHOOK_SECRET = env("RAZORPAY_WEBHOOK_SECRET", default="")
 USE_BREVO_EMAIL = env.bool("USE_BREVO_EMAIL", default=False)
 BREVO_API_KEY = env("BREVO_API_KEY", default="")
 BREVO_SENDER_NAME = env("BREVO_SENDER_NAME", default="AMAI")
+# Give up on Brevo after this long, so a slow provider can never hang a registration.
+BREVO_TIMEOUT_SECONDS = env.int("BREVO_TIMEOUT_SECONDS", default=10)
+# Replies to our emails go here (the secretariat), not to the no-reply style sender address.
+EMAIL_REPLY_TO = env("EMAIL_REPLY_TO", default="")
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
 )

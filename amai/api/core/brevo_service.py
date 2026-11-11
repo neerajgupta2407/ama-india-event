@@ -3,7 +3,12 @@ import logging
 from django.conf import settings
 
 import brevo_python
-from brevo_python.models import SendSmtpEmail, SendSmtpEmailSender, SendSmtpEmailTo
+from brevo_python.models import (
+    SendSmtpEmail,
+    SendSmtpEmailReplyTo,
+    SendSmtpEmailSender,
+    SendSmtpEmailTo,
+)
 from brevo_python.rest import ApiException
 
 logger = logging.getLogger(__name__)
@@ -35,12 +40,16 @@ class BrevoService:
             "to": [SendSmtpEmailTo(email=recipient_email)],
             "subject": subject,
         }
+        if getattr(settings, "EMAIL_REPLY_TO", ""):
+            params["reply_to"] = SendSmtpEmailReplyTo(email=settings.EMAIL_REPLY_TO)
         if text_content:
             params["text_content"] = text_content
         if html_content:
             params["html_content"] = html_content
         try:
-            response = self.email_api.send_transac_email(SendSmtpEmail(**params))
+            response = self.email_api.send_transac_email(
+                SendSmtpEmail(**params), _request_timeout=settings.BREVO_TIMEOUT_SECONDS
+            )
         except ApiException as error:
             # The body can echo personal data, so only the status is logged.
             logger.error("Brevo API error %s %s", error.status, error.reason)

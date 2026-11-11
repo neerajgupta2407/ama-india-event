@@ -11,5 +11,6 @@ RAZORPAY_WEBHOOK_SECRET = "dummy"
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 STAFF_ALERT_EMAILS = ["staff@example.com"]
 USE_BREVO_EMAIL = False
+EMAIL_REPLY_TO = ""
 TEST_TO_EMAIL = ""
 SITE_URL = "https://example.test"
