@@ -17,9 +17,7 @@ import type {
 } from "@/types/registration";
 import {
   DELEGATE_OPTIONS,
-  EMPTY_DELEGATE,
   formatMoney,
-  hasOpenDelegateList,
   minAdditionalDelegates,
   priceBreakdown,
   resizeDelegates,
@@ -88,18 +86,6 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
     if (delegateErrors[index]?.[field]) {
       setDelegateErrors((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: undefined } : row)));
     }
-  }
-
-  function addDelegate() {
-    setValues((prev) => ({ ...prev, additional_delegates: [...prev.additional_delegates, { ...EMPTY_DELEGATE }] }));
-  }
-
-  function removeDelegate(index: number) {
-    setValues((prev) => ({
-      ...prev,
-      additional_delegates: prev.additional_delegates.filter((_, i) => i !== index),
-    }));
-    setDelegateErrors([]);
   }
 
   /** Checks the whole details step and shows every problem; true when the form can go on. */
@@ -366,10 +352,8 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
                       <div className="col-12">
                         <h2 className="ai_reg_sub">Other delegates</h2>
                         <p className="ai_muted mb-0">
-                          You are delegate 1. Please give the name, email and designation of{" "}
-                          {hasOpenDelegateList(values.delegates)
-                            ? "at least four other delegates."
-                            : `the other ${minAdditionalDelegates(values.delegates) === 1 ? "delegate" : "delegates"}.`}
+                          You are delegate 1. Please give the name, email and designation of the other{" "}
+                          {minAdditionalDelegates(values.delegates) === 1 ? "delegate" : "delegates"}.
                         </p>
                       </div>
                     )}
@@ -377,16 +361,10 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
                       const rowErrors = delegateErrors[index] ?? {};
                       const fieldClass = (field: keyof AdditionalDelegate) =>
                         `form-control${rowErrors[field] ? " is-invalid" : ""}`;
-                      const canRemove = index >= minAdditionalDelegates(values.delegates);
                       return (
                         <div className="col-12 ai_reg_delegate" key={index}>
                           <div className="ai_reg_delegate_head">
                             <b>Delegate {index + 2}</b>
-                            {canRemove && (
-                              <button className="ai_reg_link" type="button" onClick={() => removeDelegate(index)}>
-                                Remove
-                              </button>
-                            )}
                           </div>
                           <div className="row g-3">
                             <div className="col-12 col-md-4">
@@ -435,13 +413,6 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
                         </div>
                       );
                     })}
-                    {hasOpenDelegateList(values.delegates) && (
-                      <div className="col-12">
-                        <button className="ai_btn ai_reg_ghost" type="button" onClick={addDelegate}>
-                          <i aria-hidden="true" className="bi bi-plus-lg"></i> Add another delegate
-                        </button>
-                      </div>
-                    )}
                     <div className="col-12">
                       <label htmlFor="aiMessage">Message</label>
                       <textarea
