@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from model_bakery import baker
 
-from events.choices import Currency
+from events.choices import Audience, Currency
 from events.models import Event, TicketCategory
 from events.services import PricingService
 
@@ -72,6 +72,7 @@ class QuoteOrderTests(TestCase):
         self.category = baker.make(
             TicketCategory,
             event=self.event,
+            audience=Audience.NON_MEMBER,
             base_amount_minor=30_000_00,
             gst_rate=Decimal("18.00"),
         )
@@ -115,6 +116,26 @@ class QuoteOrderTests(TestCase):
 
         self.assertEqual(0, quote.discount_minor)
         self.assertEqual(60_000_00 + 10_800_00, quote.total_minor)
+
+    def test_international_delegates_get_early_bird_but_no_group_discount(self):
+        international = baker.make(
+            TicketCategory,
+            event=self.event,
+            audience=Audience.INTERNATIONAL,
+            currency=Currency.USD,
+            base_amount_minor=900_00,
+            gst_rate=Decimal("0.00"),
+        )
+
+        before = PricingService.quote_order(
+            category=international, delegates=3, at=self.now
+        )
+        after = PricingService.quote_order(
+            category=international, delegates=3, at=self.now + timedelta(days=6)
+        )
+
+        self.assertEqual(Decimal("10.00"), before.discount_percent)
+        self.assertEqual(Decimal("0"), after.discount_percent)
 
     def test_no_discount_rules_configured_means_list_price(self):
         plain = baker.make(Event)

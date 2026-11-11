@@ -61,9 +61,10 @@ class Command(BaseCommand):
                 "city": "New Delhi",
                 "status": EventStatus.OPEN,
                 "registration_prefix": "AC27",
-                # From the design: 10% early-bird and 10% for 3+ delegates. The early-bird
-                # rule stays inactive until AMAI gives a cutoff date (early_bird_until).
+                # 10% early bird on every category until the cutoff, and a further 10% for
+                # 3+ delegates in the Indian categories (the group rule skips international).
                 "early_bird_percent": "10.00",
+                "early_bird_until": datetime(2026, 12, 11, 23, 59, tzinfo=IST),
                 "group_discount_percent": "10.00",
                 "group_min_delegates": 3,
             },

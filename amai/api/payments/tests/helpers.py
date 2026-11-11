@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from model_bakery import baker
 
-from events.choices import EventStatus
+from events.choices import Audience, EventStatus
 from events.models import Event, TicketCategory
 from registrations.models import Registration
 
@@ -30,6 +30,7 @@ def make_registration(*, online=True, delegates="2", group_percent="10.00"):
         TicketCategory,
         event=event,
         code="non-member",
+        audience=Audience.NON_MEMBER,
         base_amount_minor=30_000_00,
         gst_rate=Decimal("18.00"),
         currency="INR",

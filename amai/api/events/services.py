@@ -3,6 +3,8 @@ from decimal import ROUND_HALF_UP, Decimal
 
 from django.utils import timezone
 
+from events.choices import Audience
+
 
 @dataclass(frozen=True)
 class Quote:
@@ -64,7 +66,8 @@ class PricingService:
     def quote_order(*, category, delegates, at=None):
         """
         Total for a group of delegates. Discounts come from the event's rules and
-        are added together; GST is charged on the discounted amount.
+        are added together; GST is charged on the discounted amount. The group
+        discount is for Indian delegates only; early bird applies to every category.
         """
         at = at or timezone.now()
         event = category.event
@@ -75,7 +78,11 @@ class PricingService:
             and at <= event.early_bird_until
         ):
             percent += event.early_bird_percent
-        if event.group_discount_percent > 0 and delegates >= event.group_min_delegates:
+        if (
+            event.group_discount_percent > 0
+            and delegates >= event.group_min_delegates
+            and category.audience != Audience.INTERNATIONAL
+        ):
             percent += event.group_discount_percent
         percent = min(percent, Decimal(100))
 
