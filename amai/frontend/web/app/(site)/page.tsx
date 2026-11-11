@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import About from "@/components/conference/About";
 import Celebration50 from "@/components/conference/Celebration50";
 import ConferenceGlance from "@/components/conference/ConferenceGlance";
@@ -12,6 +14,8 @@ import RegistrationFees from "@/components/conference/RegistrationFees";
 import RoomReservation from "@/components/conference/RoomReservation";
 import Themes from "@/components/conference/Themes";
 import Venue from "@/components/conference/Venue";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
   return (

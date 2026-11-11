@@ -14,6 +14,7 @@ export async function generateMetadata(props: PageProps<"/register/[category]">)
   const { title } = CATEGORIES[category];
   return {
     title: `Register – ${title}`,
+    alternates: { canonical: `/register/${category}/` },
     description: `Register as ${title.toLowerCase()} for the 12th AMAI Alkali Industry Conference, 28–29 January 2027, Andaz by Hyatt, Aerocity, New Delhi.`,
   };
 }

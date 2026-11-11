@@ -29,6 +29,12 @@ export const URLS = {
 } as const;
 
 export const SITE = {
+  /** Public origin of the site, for canonical links, link previews and the sitemap. */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://events.amaindiaevents.org",
+  /** Search engines are kept out until launch: build with NEXT_PUBLIC_ALLOW_INDEXING=true to open the site up. */
+  indexable: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
+  /** Link to the conference brochure PDF. The hero button stays hidden while this is empty. */
+  brochureUrl: "",
   email: "hkanand@ama-india.org",
   /** WhatsApp Business number used by the "Send on WhatsApp" fallback. */
   whatsappNumber: "919818904989",

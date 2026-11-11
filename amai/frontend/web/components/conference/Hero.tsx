@@ -1,3 +1,5 @@
+import { SITE } from "@/config/urls";
+
 export default function Hero() {
   return (
     <>
@@ -27,10 +29,12 @@ export default function Hero() {
                 <div className="d-flex flex-wrap gap-3 mt-3 justify-content-center">
                   <a className="ai_btn ai_btn_hlight" href="#register">
                     Register Now <i aria-hidden="true" className="bi bi-arrow-right"></i>
-                  </a>{" "}
-                  <a className="ai_btn ai_btn_o " href="">
-                    Conference Brochure
                   </a>
+                  {SITE.brochureUrl && (
+                    <a className="ai_btn ai_btn_o" href={SITE.brochureUrl} rel="noopener noreferrer" target="_blank">
+                      Conference Brochure
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

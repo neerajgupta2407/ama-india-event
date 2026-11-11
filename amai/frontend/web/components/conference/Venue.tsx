@@ -18,7 +18,7 @@ export default function Venue() {
                   in due course.
                 </p>
                 <div>
-                  <a className="" href="https://www.hyatt.com/andaz/delaz-andaz-delhi" rel="noopener" target="_blank">
+                  <a className="" href="https://www.hyatt.com/andaz/delaz-andaz-delhi" rel="noopener noreferrer" target="_blank">
                     <img
                       src="/img/home/andaz1.webp"
                       alt="Andaz by Hyatt, Aerocity, New Delhi"

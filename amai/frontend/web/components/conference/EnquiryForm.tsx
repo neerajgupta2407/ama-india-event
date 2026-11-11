@@ -39,7 +39,15 @@ export function EnquiryForm() {
       <div className="row g-3">
         <div className="col-12 col-sm-6">
           <label htmlFor="enqName">Name</label>
-          <input id="enqName" type="text" className="form-control" placeholder="Name" name="name" autoComplete="name" />
+          <input
+            id="enqName"
+            type="text"
+            className="form-control"
+            placeholder="Name"
+            name="name"
+            autoComplete="name"
+            required
+          />
         </div>
         <div className="col-12 col-sm-6">
           <label htmlFor="enqCname">Company Name</label>
@@ -61,6 +69,9 @@ export function EnquiryForm() {
             placeholder="Mobile Number"
             name="mobile"
             autoComplete="tel"
+            inputMode="tel"
+            pattern="[0-9+\-\s]{8,15}"
+            title="Enter a valid mobile number (8–15 digits)."
             required
           />
         </div>

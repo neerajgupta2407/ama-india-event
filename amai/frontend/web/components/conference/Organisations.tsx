@@ -13,7 +13,7 @@ export default function Organisations() {
             <a
               className="ai_btn ai_btn_o"
               href="https://ama-india.org/participating-companies-24-2026/"
-              rel="noopener"
+              rel="noopener noreferrer"
               target="_blank"
             >
               View past participants
@@ -155,7 +155,7 @@ export default function Organisations() {
             <a
               className="ai_btn ai_btn_o mt-4"
               href="https://ama-india.org/participating-companies-24-2026/#po-25"
-              rel="noopener"
+              rel="noopener noreferrer"
               target="_blank"
             >
               View all

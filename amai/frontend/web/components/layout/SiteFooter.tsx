@@ -29,7 +29,7 @@ export default function SiteFooter() {
                   </span>
                 </Link>
                 <div className=" mt-3">
-                  12 <sup>th</sup> AMAI Alkali Industry Conference. <br /> 28–29 January 2027
+                  12<sup>th</sup> AMAI Alkali Industry Conference. <br /> 28–29 January 2027
                 </div>
               </div>
             </div>
@@ -47,9 +47,7 @@ export default function SiteFooter() {
                   </li>
                   <li>|</li>
                   <li>
-                    <a href="" rel="" target="_blank">
-                      Sitemap
-                    </a>
+                    <a href="/sitemap.xml">Sitemap</a>
                   </li>
                   <li>|</li>
                   <li>
@@ -66,19 +64,19 @@ export default function SiteFooter() {
                   aria-label="LinkedIn"
                   className="me-2"
                   href="https://www.linkedin.com/company/amai-india/"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <i aria-hidden="true" className="bi bi-linkedin ai_ic"></i>
                 </a>{" "}
-                <a aria-label="X" className="me-2" href="https://twitter.com/amai_india" rel="noopener" target="_blank">
+                <a aria-label="X" className="me-2" href="https://twitter.com/amai_india" rel="noopener noreferrer" target="_blank">
                   <i aria-hidden="true" className="bi bi-twitter-x ai_ic"></i>
                 </a>{" "}
                 <a
                   aria-label="Facebook"
                   className="me-2"
                   href="https://www.facebook.com/amai.india"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <i aria-hidden="true" className="bi bi-facebook ai_ic"></i>
@@ -87,7 +85,7 @@ export default function SiteFooter() {
                   aria-label="Instagram"
                   className="me-2"
                   href="https://www.instagram.com/amai.india/"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <i aria-hidden="true" className="bi bi-instagram ai_ic"></i>
@@ -96,7 +94,7 @@ export default function SiteFooter() {
                   aria-label="YouTube"
                   className="me-2"
                   href="https://www.youtube.com/channel/UCJQUXpEZ7qULElaCUJw4M0w"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <i aria-hidden="true" className="bi bi-youtube ai_ic"></i>

@@ -19,7 +19,7 @@ export default function SiteHeader() {
                     aria-label="LinkedIn"
                     className="me-2"
                     href="https://www.linkedin.com/company/amai-india/"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <i aria-hidden="true" className="bi bi-linkedin ai_ic"></i>
@@ -28,7 +28,7 @@ export default function SiteHeader() {
                     aria-label="X"
                     className="me-2"
                     href="https://twitter.com/amai_india"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <i aria-hidden="true" className="bi bi-twitter-x ai_ic"></i>
@@ -37,7 +37,7 @@ export default function SiteHeader() {
                     aria-label="Facebook"
                     className="me-2"
                     href="https://www.facebook.com/amai.india"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <i aria-hidden="true" className="bi bi-facebook ai_ic"></i>
@@ -46,7 +46,7 @@ export default function SiteHeader() {
                     aria-label="Instagram"
                     className="me-2"
                     href="https://www.instagram.com/amai.india/"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <i aria-hidden="true" className="bi bi-instagram ai_ic"></i>
@@ -55,7 +55,7 @@ export default function SiteHeader() {
                     aria-label="YouTube"
                     className="me-2"
                     href="https://www.youtube.com/channel/UCJQUXpEZ7qULElaCUJw4M0w"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <i aria-hidden="true" className="bi bi-youtube ai_ic"></i>
@@ -128,24 +128,24 @@ export default function SiteHeader() {
                   </a>
                   <ul className="ai_dd dropdown-menu">
                     <li>
-                      <a className="ai_menu_link" href="">
+                      <Link className="ai_menu_link" href="/#sponsorship">
                         Sponsors
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a className="ai_menu_link" href="">
+                      <Link className="ai_menu_link" href="/#exhibitor">
                         Exhibitors
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a className="ai_menu_link" href="">
+                      <Link className="ai_menu_link" href="/#participate">
                         Media Partners
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a className="ai_menu_link" href="">
-                        Deligates
-                      </a>
+                      <Link className="ai_menu_link" href="/#delegates">
+                        Delegates
+                      </Link>
                     </li>
                   </ul>
                 </li>
@@ -206,7 +206,7 @@ export default function SiteHeader() {
                       </Link>
                     </li>
                     <li>
-                      <Link className="ai_dd_item dropdown-item" href="/#media-partner">
+                      <Link className="ai_dd_item dropdown-item" href="/#participate">
                         <i aria-hidden="true" className="bi bi-megaphone"></i> Media Partner
                       </Link>
                     </li>

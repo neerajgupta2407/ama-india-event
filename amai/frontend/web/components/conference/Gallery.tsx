@@ -13,32 +13,32 @@ export default function Gallery() {
           </div>
           <div className="row g-3">
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/1.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 1" loading="lazy" src="/img/gallery/1.webp" className="img-fluid" />
               </a>
             </div>
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/2.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 2" loading="lazy" src="/img/gallery/2.webp" className="img-fluid" />
               </a>
             </div>
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/3.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 3" loading="lazy" src="/img/gallery/3.webp" className="img-fluid" />
               </a>
             </div>
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/4.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 4" loading="lazy" src="/img/gallery/4.webp" className="img-fluid" />
               </a>
             </div>
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/5.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 5" loading="lazy" src="/img/gallery/5.webp" className="img-fluid" />
               </a>
             </div>
             <div className="col-6 col-md-4">
-              <a className="ai_gal_item d-block" href="" rel="noopener" target="_blank">
+              <a className="ai_gal_item d-block" href="/img/gallery/6.webp" rel="noopener noreferrer" target="_blank">
                 <img alt="Previous conference photo 6" loading="lazy" src="/img/gallery/6.webp" className="img-fluid" />
               </a>
             </div>

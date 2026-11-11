@@ -7,21 +7,33 @@ import "@/styles/menu_css.css";
 import "@/styles/main_css.css";
 import "@/styles/responsive_style.css";
 
+import { SITE } from "@/config/urls";
 import PageEffects from "@/components/layout/PageEffects";
 import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 
+const SITE_DESCRIPTION =
+  "12th AMAI Alkali Industry Conference – Shaping a Competitive, Sustainable and Resilient Future. 28–29 January 2027, Andaz by Hyatt, Aerocity, New Delhi.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
     default: "12th AMAI Alkali Industry Conference 2027 | 28–29 January 2027",
     template: "%s | 12th AMAI Alkali Industry Conference 2027",
   },
-  description:
-    "12th AMAI Alkali Industry Conference – Shaping a Competitive, Sustainable and Resilient Future. 28–29 January 2027, Andaz by Hyatt, Aerocity, New Delhi.",
+  description: SITE_DESCRIPTION,
   icons: { icon: "/img/f_icon.jpg" },
-  // Stay out of search results until launch.
-  robots: { index: false, follow: false },
+  openGraph: {
+    type: "website",
+    siteName: "AMAI Alkali Industry Conference 2027",
+    title: "12th AMAI Alkali Industry Conference 2027 | 28–29 January 2027",
+    description: SITE_DESCRIPTION,
+    images: [{ url: "/img/home/andaz1.webp", alt: "Andaz by Hyatt, Aerocity, New Delhi" }],
+  },
+  twitter: { card: "summary_large_image" },
+  // Stay out of search results until launch (see SITE.indexable).
+  robots: SITE.indexable ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };

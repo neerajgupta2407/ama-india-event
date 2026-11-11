@@ -34,7 +34,7 @@ export default function RegistrationFees() {
                     <span>10% multiple-delegate discount for 3 or more participants from the same organisation</span>
                   </li>
                 </ul>
-                <Link href="/register/member" className="ai_btn" target="_blank">
+                <Link href="/register/member" className="ai_btn">
                   Register
                 </Link>
               </div>
@@ -77,8 +77,8 @@ export default function RegistrationFees() {
                     <i className="bi bi-check2 ai_ic" aria-hidden="true"></i> <span>For foreign participants</span>
                   </li>
                 </ul>
-                <Link href="/register/international" className="ai_btn" target="_blank">
-                  Contact the secretariat
+                <Link href="/register/international" className="ai_btn">
+                  Register
                 </Link>
               </div>
             </div>
