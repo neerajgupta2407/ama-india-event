@@ -35,6 +35,8 @@ export const SITE = {
   indexable: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
   /** Link to the conference brochure PDF. The hero button stays hidden while this is empty. */
   brochureUrl: "",
+  /** Andaz by Hyatt group-booking page for conference delegates. */
+  hotelBookingUrl: "https://www.hyatt.com/events/en-US/group-booking/DELAZ/G-AMA9",
   email: "hkanand@ama-india.org",
   /** WhatsApp Business number used by the "Send on WhatsApp" fallback. */
   whatsappNumber: "919818904989",

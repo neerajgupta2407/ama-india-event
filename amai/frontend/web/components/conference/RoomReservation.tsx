@@ -1,3 +1,5 @@
+import { SITE } from "@/config/urls";
+
 export default function RoomReservation() {
   return (
     <>
@@ -24,7 +26,7 @@ export default function RoomReservation() {
               </div>
               <a
                 className="ai_btn"
-                href="https://www.hyatt.com/events/en-US/group-booking/DELAZ/G-AMA1"
+                href={SITE.hotelBookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
