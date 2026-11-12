@@ -66,29 +66,32 @@ class PricingService:
     def quote_order(*, category, delegates, at=None):
         """
         Total for a group of delegates. Discounts come from the event's rules and
-        are added together; GST is charged on the discounted amount. The group
-        discount is for Indian delegates only; early bird applies to every category.
+        compound, as in the secretariat's fee sheet: early bird comes off the base
+        fee, then the group discount comes off what is left (10% then 10% is 19% off,
+        not 20%). GST is charged on the discounted amount. The group discount is for
+        Indian delegates only; early bird applies to every category.
         """
         at = at or timezone.now()
         event = category.event
-        percent = Decimal(0)
+        remaining = Decimal(100)
         if (
             event.early_bird_percent > 0
             and event.early_bird_until is not None
             and at <= event.early_bird_until
         ):
-            percent += event.early_bird_percent
+            remaining = remaining * (100 - min(event.early_bird_percent, 100)) / 100
         if (
             event.group_discount_percent > 0
             and delegates >= event.group_min_delegates
             and category.audience != Audience.INTERNATIONAL
         ):
-            percent += event.group_discount_percent
-        percent = min(percent, Decimal(100))
+            remaining = remaining * (100 - min(event.group_discount_percent, 100)) / 100
+        # The combined percent off the base fee, as shown to the buyer.
+        percent = (100 - remaining).quantize(Decimal("0.01"))
 
         subtotal = category.base_amount_minor * delegates
-        discount = _round_minor(Decimal(subtotal) * percent / 100)
-        taxable = subtotal - discount
+        taxable = _round_minor(Decimal(subtotal) * remaining / 100)
+        discount = subtotal - taxable
         gst = _round_minor(Decimal(taxable) * category.gst_rate / 100)
         return OrderQuote(
             currency=category.currency,

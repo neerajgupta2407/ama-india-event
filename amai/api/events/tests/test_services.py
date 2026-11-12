@@ -88,15 +88,44 @@ class QuoteOrderTests(TestCase):
         self.assertEqual(4_860_00, quote.gst_minor)
         self.assertEqual(31_860_00, quote.total_minor)
 
-    def test_three_delegates_before_cutoff_add_both_discounts(self):
+    def test_three_delegates_before_cutoff_compound_both_discounts(self):
         quote = PricingService.quote_order(
             category=self.category, delegates=3, at=self.now
         )
 
-        self.assertEqual(Decimal("20.00"), quote.discount_percent)
+        # 10% early bird, then 10% group off the rest: 19% off, not 20%.
+        self.assertEqual(Decimal("19.00"), quote.discount_percent)
         self.assertEqual(90_000_00, quote.subtotal_minor)
-        self.assertEqual(18_000_00, quote.discount_minor)
-        self.assertEqual(72_000_00 + 12_960_00, quote.total_minor)
+        self.assertEqual(17_100_00, quote.discount_minor)
+        self.assertEqual(72_900_00, quote.taxable_minor)
+        self.assertEqual(13_122_00, quote.gst_minor)
+        self.assertEqual(86_022_00, quote.total_minor)
+
+    def test_totals_match_the_secretariat_fee_sheet(self):
+        # (base fee in whole rupees, delegates, expected total incl. GST) from the 2027 sheet.
+        sheet = [
+            (30_000, 1, 31_860),
+            (30_000, 2, 63_720),
+            (30_000, 3, 86_022),
+            (30_000, 4, 114_696),
+            (35_000, 1, 37_170),
+            (35_000, 2, 74_340),
+            (35_000, 3, 100_359),
+            (35_000, 4, 133_812),
+        ]
+        for base, delegates, total in sheet:
+            with self.subTest(base=base, delegates=delegates):
+                category = baker.make(
+                    TicketCategory,
+                    event=self.event,
+                    audience=Audience.NON_MEMBER,
+                    base_amount_minor=base * 100,
+                    gst_rate=Decimal("18.00"),
+                )
+                quote = PricingService.quote_order(
+                    category=category, delegates=delegates, at=self.now
+                )
+                self.assertEqual(total * 100, quote.total_minor)
 
     def test_after_cutoff_only_group_discount_applies(self):
         later = self.now + timedelta(days=6)
