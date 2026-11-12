@@ -59,6 +59,7 @@ export interface RegistrationRow {
   member_validation: MemberState;
   full_name: string;
   company_name: string;
+  membership: string;
   mobile: string;
   email: string;
   delegates: string;

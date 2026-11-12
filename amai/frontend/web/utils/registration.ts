@@ -33,7 +33,7 @@ export const CATEGORIES: Record<CategoryKey, RegistrationCategory> = {
 
 export const DELEGATE_OPTIONS = ["1", "2", "3", "4"] as const;
 
-export const EMPTY_DELEGATE: AdditionalDelegate = { name: "", email: "", designation: "" };
+export const EMPTY_DELEGATE: AdditionalDelegate = { name: "", email: "", phone: "", designation: "" };
 
 /** How many other delegates must be named: one fewer than the count, since the registrant is delegate 1. */
 export function minAdditionalDelegates(delegates: string): number {

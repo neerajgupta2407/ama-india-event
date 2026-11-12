@@ -33,6 +33,7 @@ class RegistrationService:
             ),
             full_name=data["name"],
             company_name=data.get("company_name", ""),
+            membership=data.get("membership", ""),
             mobile=data["mobile"],
             email=data["email"],
             delegates=data["delegates"],
@@ -64,6 +65,7 @@ class RegistrationService:
             f"Delegates: {registration.delegates}\n"
             f"Name: {registration.full_name}\n"
             f"Company: {registration.company_name}\n"
+            f"Membership: {registration.membership}\n"
             f"Mobile: {registration.mobile}\n"
             f"Email: {registration.email}\n"
             f"Membership check: {registration.get_member_validation_display()}\n"
@@ -84,7 +86,7 @@ class RegistrationService:
         for number, delegate in enumerate(registration.additional_delegates, start=2):
             lines += (
                 f"{number}. {delegate['name']} | {delegate['email']} | "
-                f"{delegate['designation']}\n"
+                f"{delegate.get('phone', '')} | {delegate['designation']}\n"
             )
         return lines
 

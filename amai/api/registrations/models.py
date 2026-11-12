@@ -37,11 +37,13 @@ class Registration(UUIDBaseModel):
 
     full_name = models.CharField(max_length=200)
     company_name = models.CharField(max_length=200, blank=True)
+    # The AMAI member organisation named by a member delegate. Staff check it against the member list.
+    membership = models.CharField(max_length=200, blank=True)
     mobile = models.CharField(max_length=20)
     email = models.EmailField()
     delegates = models.CharField(max_length=20, choices=DelegateCount.choices)
     message = models.TextField(blank=True)
-    # The other delegates, beyond the person registering: [{"name", "email", "designation"}].
+    # The other delegates, beyond the person registering: [{"name", "email", "phone", "designation"}].
     additional_delegates = models.JSONField(default=list, blank=True)
 
     # Price per participant at the time of the request (minor units).

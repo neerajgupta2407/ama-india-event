@@ -15,13 +15,8 @@ import type {
   RegistrationReceipt,
   RegistrationRequestPayload,
 } from "@/types/registration";
-import {
-  DELEGATE_OPTIONS,
-  formatMoney,
-  minAdditionalDelegates,
-  priceBreakdown,
-  resizeDelegates,
-} from "@/utils/registration";
+import { AMAI_MEMBERS } from "@/utils/members";
+import { DELEGATE_OPTIONS, formatMoney, priceBreakdown, resizeDelegates } from "@/utils/registration";
 import { saveOrderToken } from "@/utils/orderToken";
 import { openCheckout } from "@/utils/razorpay";
 import { validateAdditionalDelegates, validateDetails } from "@/utils/validation";
@@ -29,13 +24,25 @@ import { validateAdditionalDelegates, validateDetails } from "@/utils/validation
 type Step = 1 | 2 | 3;
 type Alert = { kind: "success" | "danger" | "info"; text: string } | null;
 
-const EMPTY: RegistrationFormValues = { name: "", company_name: "", mobile: "", email: "", delegates: "", message: "", additional_delegates: [] };
+const EMPTY: RegistrationFormValues = {
+  name: "",
+  company_name: "",
+  membership: "",
+  mobile: "",
+  email: "",
+  delegates: "",
+  additional_delegates: [],
+};
 
 export default function RegisterForm({ category }: { category: RegistrationCategory }) {
   const { post } = useApi();
   const [step, setStep] = useState<Step>(1);
   const [chosen, setChosen] = useState(false);
   const [categoryError, setCategoryError] = useState(false);
+  // Member delegates tick "Membership" and then pick their organisation from the AMAI member list.
+  const needsMembership = category.key === "member";
+  const [membershipOn, setMembershipOn] = useState(false);
+  const [membershipError, setMembershipError] = useState(false);
   const [values, setValues] = useState<RegistrationFormValues>(EMPTY);
   const [errors, setErrors] = useState<RegistrationErrors>({});
   const [delegateErrors, setDelegateErrors] = useState<AdditionalDelegateErrors[]>([]);
@@ -78,6 +85,23 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
     }
   }
 
+  function onMembershipToggle(event: ChangeEvent<HTMLInputElement>) {
+    const on = event.target.checked;
+    setMembershipOn(on);
+    setMembershipError(false);
+    if (on) {
+      setChosen(true);
+      setCategoryError(false);
+    } else {
+      setValues((prev) => ({ ...prev, membership: "" }));
+    }
+  }
+
+  function onMembershipChange(event: ChangeEvent<HTMLSelectElement>) {
+    setValues((prev) => ({ ...prev, membership: event.target.value }));
+    setMembershipError(false);
+  }
+
   function onDelegateChange(index: number, field: keyof AdditionalDelegate, value: string) {
     setValues((prev) => ({
       ...prev,
@@ -101,6 +125,10 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
     if (target > step) {
       if (step === 1 && !chosen) {
         setCategoryError(true);
+        return;
+      }
+      if (step === 1 && needsMembership && !(membershipOn && values.membership)) {
+        setMembershipError(true);
         return;
       }
       if (target >= 3) {
@@ -163,20 +191,22 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
   function sendOnWhatsApp() {
     if (!validateAll()) return;
     const delegateLines = values.additional_delegates
-      .map((d, i) => `\n${i + 2}. ${d.name} | ${d.email} | ${d.designation}`)
+      .map((d, i) => `\n${i + 2}. ${d.name} | ${d.email} | ${d.phone} | ${d.designation}`)
       .join("");
     const message =
       `Hello AMAI, I would like to register for the ${SITE.conferenceName} (${SITE.conferenceDates}).` +
       `\nCategory: ${category.label}` +
-      `\nName: ${values.name}\nCompany: ${values.company_name}\nMobile: ${values.mobile}` +
+      `\nName: ${values.name}\nCompany: ${values.company_name}` +
+      (values.membership ? `\nMembership: ${values.membership}` : "") +
+      `\nMobile: ${values.mobile}` +
       `\nEmail: ${values.email}\nDelegates: ${values.delegates}` +
-      (delegateLines ? `\nAdditional delegates:${delegateLines}` : "") +
-      (values.message ? `\nNote: ${values.message}` : "");
+      (delegateLines ? `\nAdditional delegates:${delegateLines}` : "");
     window.open(URL_BUILDERS.whatsapp(message), "_blank", "noopener");
   }
 
   const reviewRows: [string, string, Step][] = [
     ["Category", category.label, 1],
+    ["Membership", values.membership, 1],
     ["Name", values.name, 2],
     ["Company", values.company_name, 2],
     ["Mobile", values.mobile, 2],
@@ -184,10 +214,9 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
     ["Number of delegates", values.delegates, 2],
     ...values.additional_delegates.map((d, i): [string, string, Step] => [
       `Delegate ${i + 2}`,
-      `${d.name}\n${d.email}\n${d.designation}`,
+      `${d.name}\n${d.email}\n${d.phone}\n${d.designation}`,
       2,
     ]),
-    ["Message", values.message, 2],
   ];
 
   const invalid = (name: keyof RegistrationErrors) => (errors[name] ? " is-invalid" : "");
@@ -250,6 +279,47 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
                       )}
                     </span>
                   </label>
+                  {needsMembership && (
+                    <div className="ai_reg_member">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="aiMembership"
+                          checked={membershipOn}
+                          onChange={onMembershipToggle}
+                        />
+                        <label className="form-check-label" htmlFor="aiMembership">
+                          Membership
+                        </label>
+                      </div>
+                      {membershipOn && (
+                        <div className="mt-2">
+                          <label htmlFor="aiMembershipName" className="visually-hidden">
+                            AMAI membership
+                          </label>
+                          <select
+                            className={`form-select${membershipError && !values.membership ? " is-invalid" : ""}`}
+                            id="aiMembershipName"
+                            value={values.membership}
+                            onChange={onMembershipChange}
+                          >
+                            <option value="">Select your membership</option>
+                            {AMAI_MEMBERS.map((member) => (
+                              <option key={member} value={member}>
+                                {member}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      {membershipError && (
+                        <div className="text-danger small mt-2">
+                          Please tick Membership and select your organisation to continue.
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {categoryError && <div className="text-danger small mt-2">Please choose a category to continue.</div>}
                   <div className="ai_reg_actions justify-content-end">
                     <button className="ai_btn" type="button" onClick={() => goTo(2)}>
@@ -350,81 +420,63 @@ export default function RegisterForm({ category }: { category: RegistrationCateg
                     </div>
                     {values.additional_delegates.length > 0 && (
                       <div className="col-12">
-                        <h2 className="ai_reg_sub">Other delegates</h2>
-                        <p className="ai_muted mb-0">
-                          You are delegate 1. Please give the name, email and designation of the other{" "}
-                          {minAdditionalDelegates(values.delegates) === 1 ? "delegate" : "delegates"}.
-                        </p>
+                        <div className="table-responsive ai_reg_table">
+                          <table className="table align-middle mb-0">
+                            <thead>
+                              <tr>
+                                <th scope="col">S. No.</th>
+                                <th scope="col">
+                                  Name <span className="ai_reg_req">*</span>
+                                </th>
+                                <th scope="col">
+                                  Email Id <span className="ai_reg_req">*</span>
+                                </th>
+                                <th scope="col">
+                                  Phone Number <span className="ai_reg_req">*</span>
+                                </th>
+                                <th scope="col">
+                                  Designation <span className="ai_reg_req">*</span>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {values.additional_delegates.map((delegate, index) => {
+                                const rowErrors = delegateErrors[index] ?? {};
+                                const cell = (
+                                  field: keyof AdditionalDelegate,
+                                  label: string,
+                                  type: string,
+                                  autoComplete?: string,
+                                ) => (
+                                  <td>
+                                    <input
+                                      type={type}
+                                      className={`form-control${rowErrors[field] ? " is-invalid" : ""}`}
+                                      aria-label={`Delegate ${index + 2} ${label}`}
+                                      placeholder={label}
+                                      autoComplete={autoComplete}
+                                      inputMode={type === "tel" ? "tel" : undefined}
+                                      value={delegate[field]}
+                                      onChange={(e) => onDelegateChange(index, field, e.target.value)}
+                                    />
+                                    <div className="invalid-feedback">{rowErrors[field]}</div>
+                                  </td>
+                                );
+                                return (
+                                  <tr key={index}>
+                                    <th scope="row">{index + 2}</th>
+                                    {cell("name", "Name", "text")}
+                                    {cell("email", "Email Id", "email")}
+                                    {cell("phone", "Phone Number", "tel")}
+                                    {cell("designation", "Designation", "text")}
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     )}
-                    {values.additional_delegates.map((delegate, index) => {
-                      const rowErrors = delegateErrors[index] ?? {};
-                      const fieldClass = (field: keyof AdditionalDelegate) =>
-                        `form-control${rowErrors[field] ? " is-invalid" : ""}`;
-                      return (
-                        <div className="col-12 ai_reg_delegate" key={index}>
-                          <div className="ai_reg_delegate_head">
-                            <b>Delegate {index + 2}</b>
-                          </div>
-                          <div className="row g-3">
-                            <div className="col-12 col-md-4">
-                              <label htmlFor={`aiDelName${index}`}>
-                                Name <span className="ai_reg_req">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className={fieldClass("name")}
-                                id={`aiDelName${index}`}
-                                placeholder="Name"
-                                value={delegate.name}
-                                onChange={(e) => onDelegateChange(index, "name", e.target.value)}
-                              />
-                              <div className="invalid-feedback">{rowErrors.name}</div>
-                            </div>
-                            <div className="col-12 col-md-4">
-                              <label htmlFor={`aiDelEmail${index}`}>
-                                Email Id <span className="ai_reg_req">*</span>
-                              </label>
-                              <input
-                                type="email"
-                                className={fieldClass("email")}
-                                id={`aiDelEmail${index}`}
-                                placeholder="Email Id"
-                                value={delegate.email}
-                                onChange={(e) => onDelegateChange(index, "email", e.target.value)}
-                              />
-                              <div className="invalid-feedback">{rowErrors.email}</div>
-                            </div>
-                            <div className="col-12 col-md-4">
-                              <label htmlFor={`aiDelDesig${index}`}>
-                                Designation <span className="ai_reg_req">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className={fieldClass("designation")}
-                                id={`aiDelDesig${index}`}
-                                placeholder="Designation"
-                                value={delegate.designation}
-                                onChange={(e) => onDelegateChange(index, "designation", e.target.value)}
-                              />
-                              <div className="invalid-feedback">{rowErrors.designation}</div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div className="col-12">
-                      <label htmlFor="aiMessage">Message</label>
-                      <textarea
-                        className="form-control"
-                        id="aiMessage"
-                        name="message"
-                        placeholder="Special requests, etc."
-                        rows={4}
-                        value={values.message}
-                        onChange={onChange}
-                      />
-                    </div>
                   </div>
                   <div className="ai_reg_actions">
                     <button className="ai_btn ai_reg_ghost" type="button" onClick={() => goTo(1)}>

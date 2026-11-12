@@ -34,6 +34,7 @@ class EventCategoryValidationMixin:
 class AdditionalDelegateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=200)
     email = serializers.EmailField()
+    phone = serializers.CharField(max_length=20, validators=[mobile_validator])
     designation = serializers.CharField(max_length=200)
 
 
@@ -46,6 +47,8 @@ class RegistrationRequestSerializer(
     company_name = serializers.CharField(
         max_length=200, required=False, allow_blank=True
     )
+    # Required for categories that need a membership check, see validate().
+    membership = serializers.CharField(max_length=200, required=False, allow_blank=True)
     mobile = serializers.CharField(max_length=20, validators=[mobile_validator])
     email = serializers.EmailField()
     delegates = serializers.ChoiceField(choices=DelegateCount.choices)
@@ -59,6 +62,13 @@ class RegistrationRequestSerializer(
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
+        if (
+            attrs["category_obj"].requires_member_validation
+            and not attrs.get("membership", "").strip()
+        ):
+            raise serializers.ValidationError(
+                {"membership": "Please select your AMAI membership."}
+            )
         needed = DELEGATE_NUMBERS[attrs["delegates"]]
         # "5 or more" has no exact number: the form asks for at least four more people.
         expected = 4 if needed is None else needed - 1
@@ -154,6 +164,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             "member_validation",
             "full_name",
             "company_name",
+            "membership",
             "mobile",
             "email",
             "delegates",

@@ -20,6 +20,7 @@ export interface RegistrationCategory {
 export interface AdditionalDelegate {
   name: string;
   email: string;
+  phone: string;
   designation: string;
 }
 
@@ -28,10 +29,11 @@ export type AdditionalDelegateErrors = Partial<Record<keyof AdditionalDelegate, 
 export interface RegistrationFormValues {
   name: string;
   company_name: string;
+  /** The AMAI member organisation, asked of member delegates only. */
+  membership: string;
   mobile: string;
   email: string;
   delegates: string;
-  message: string;
   additional_delegates: AdditionalDelegate[];
 }
 

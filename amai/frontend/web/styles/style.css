@@ -2276,4 +2276,46 @@ padding: 10px;
   color: var(--navy);
   font-size: 20px;
   font-weight: 800;
+}.ai_reg_member {
+  margin: -6px 0 18px;
+  padding: 14px 18px;
+  border: 1px solid #dde7ee;
+  border-radius: 14px;
+  background: #fff;
+}
+.ai_reg_member .form-check-input {
+  accent-color: var(--blue);
+}
+.ai_reg_table {
+  border: 1px solid #dde7ee;
+  border-radius: 14px;
+  background: #fff;
+}
+.ai_reg_table table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+.ai_reg_table th {
+  color: var(--navy);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ai_reg_table th[scope="row"] {
+  width: 64px;
+  text-align: center;
+}
+.ai_reg_table thead th:first-child {
+  width: 72px;
+  text-align: center;
+}
+.ai_reg_table td {
+  vertical-align: top;
+  white-space: normal;
+}
+.ai_reg_table .invalid-feedback {
+  white-space: normal;
+}
+.ai_reg_table th[scope="row"] {
+  vertical-align: top;
+  padding-top: 1.2rem;
 }

@@ -169,6 +169,8 @@ export default function RegistrationDrawer({
               <dd>{data.full_name}</dd>
               <dt>Company</dt>
               <dd>{data.company_name || "—"}</dd>
+              <dt>Membership</dt>
+              <dd>{data.membership || "—"}</dd>
               <dt>Email</dt>
               <dd>{data.email}</dd>
               <dt>Mobile</dt>
@@ -183,7 +185,7 @@ export default function RegistrationDrawer({
                   <dd>
                     {delegate.name}
                     <br />
-                    {delegate.email} · {delegate.designation}
+                    {delegate.email} · {delegate.phone} · {delegate.designation}
                   </dd>
                 </Fragment>
               ))}

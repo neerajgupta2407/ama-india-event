@@ -18,6 +18,7 @@ export function validateAdditionalDelegates(values: RegistrationFormValues): Add
     const errors: AdditionalDelegateErrors = {};
     if (!delegate.name.trim()) errors.name = "Please enter the delegate's name.";
     if (!EMAIL.test(delegate.email.trim())) errors.email = "Please enter a valid email address.";
+    if (!MOBILE.test(delegate.phone.trim())) errors.phone = "Please enter a valid phone number (8–15 digits).";
     if (!delegate.designation.trim()) errors.designation = "Please enter the delegate's designation.";
     return errors;
   });

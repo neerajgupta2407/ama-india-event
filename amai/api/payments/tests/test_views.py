@@ -36,7 +36,12 @@ class RegistrationStartsPaymentTests(TestCase):
             "email": "vikram@example.com",
             "delegates": "2",
             "additional_delegates": [
-                {"name": "Dev", "email": "dev@example.com", "designation": "Manager"}
+                {
+                    "name": "Dev",
+                    "email": "dev@example.com",
+                    "phone": "9810054321",
+                    "designation": "Manager",
+                }
             ],
         }
 
@@ -293,8 +298,18 @@ class RegistrationQuoteViewTests(TestCase):
                 "email": "vikram@example.com",
                 "delegates": "3",
                 "additional_delegates": [
-                    {"name": "A", "email": "a@example.com", "designation": "Manager"},
-                    {"name": "B", "email": "b@example.com", "designation": "Chemist"},
+                    {
+                        "name": "A",
+                        "email": "a@example.com",
+                        "phone": "9810000001",
+                        "designation": "Manager",
+                    },
+                    {
+                        "name": "B",
+                        "email": "b@example.com",
+                        "phone": "9810000002",
+                        "designation": "Chemist",
+                    },
                 ],
             },
             format="json",

@@ -36,6 +36,7 @@ class RegistrationRequestCreateViewTests(TestCase):
             "category": "member",
             "name": "Asha Rao",
             "company_name": "Rao Chemicals",
+            "membership": "Tata Chemicals Ltd.",
             "mobile": "+91 98100 12345",
             "email": "asha@example.com",
             "delegates": "2",
@@ -44,6 +45,7 @@ class RegistrationRequestCreateViewTests(TestCase):
                 {
                     "name": "Dev Rao",
                     "email": "dev@example.com",
+                    "phone": "+91 98100 54321",
                     "designation": "Plant Manager",
                 }
             ],
@@ -125,7 +127,10 @@ class RegistrationRequestCreateViewTests(TestCase):
         self.assertEqual(
             self.payload["additional_delegates"], registration.additional_delegates
         )
-        self.assertIn("Dev Rao | dev@example.com | Plant Manager", mail.outbox[0].body)
+        self.assertIn(
+            "Dev Rao | dev@example.com | +91 98100 54321 | Plant Manager",
+            mail.outbox[0].body,
+        )
 
     def test_single_delegate_needs_no_additional_details(self):
         payload = {**self.payload, "delegates": "1", "additional_delegates": []}
@@ -142,7 +147,7 @@ class RegistrationRequestCreateViewTests(TestCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual({"additional_delegates"}, set(response.json()))
 
-    def test_additional_delegate_needs_name_email_and_designation(self):
+    def test_additional_delegate_needs_name_email_phone_and_designation(self):
         payload = {
             **self.payload,
             "additional_delegates": [{"name": "Dev Rao", "email": "nope"}],
@@ -152,6 +157,38 @@ class RegistrationRequestCreateViewTests(TestCase):
 
         self.assertEqual(400, response.status_code)
         self.assertEqual({"additional_delegates"}, set(response.json()))
+        self.assertEqual(
+            {"email", "phone", "designation"},
+            set(response.json()["additional_delegates"]["0"]),
+        )
+
+    def test_member_category_needs_a_membership(self):
+        payload = {**self.payload, "membership": ""}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual({"membership"}, set(response.json()))
+
+    def test_membership_is_saved_on_the_registration(self):
+        self.client.post(self.url, self.payload, format="json")
+
+        self.assertEqual("Tata Chemicals Ltd.", Registration.objects.get().membership)
+
+    def test_non_member_category_needs_no_membership(self):
+        baker.make(
+            TicketCategory,
+            event=self.event,
+            code="non-member",
+            base_amount_minor=35_000_00,
+            gst_rate=Decimal("18.00"),
+            requires_member_validation=False,
+        )
+        payload = {**self.payload, "category": "non-member", "membership": ""}
+
+        response = self.client.post(self.url, payload, format="json")
+
+        self.assertEqual(201, response.status_code)
 
     def test_five_or_more_needs_at_least_four_additional_delegates(self):
         delegate = self.payload["additional_delegates"][0]
